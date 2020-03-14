@@ -5,19 +5,21 @@ from tkcalendar import DateEntry
 from tkinter.scrolledtext import ScrolledText
 
 
-mainColor = "#222831"
-secondaryColor = "#00adb5"
-buttonColor = "#00adb5"
-secondarybuttonColor = "#393e46"
-menuColor = "#393e46"
-homeColor = "#eeeeee"
-headerColor = "#00adb5"
 
-labelFontColor = "#eeeeee"
-secondaryFontColor = "#222831"
-titleFontColor = "#30e3ca"
-buttonFontColor = "#ffffff"
-headerFontColor = "#1b262c"
+homeColor = "#79bac1"           # THE HOME SCREEN MAIN COLOR    (LIGHTEST)
+headerColor = "#142850"         # THE HEADER FRAME COLOR        (DARKER)
+mainColor = "#27496d"           # THE START SCREEN MAIN COLOR   (DARKER)
+menuColor = "#21243d"           # THE MENU FRAME COLOR          (DARKEST)       
+buttonColor = "#21243d"         # THE BUTTON COLOR              (DARKEST) OR (LIGHTEST)
+
+
+headerFontColor = "#ffffff"     # LIGHTER
+labelFontColor = "#ffffff"      # LIGHT
+labelDarkFontColor = "#000000"  # DARK
+buttonFontColor = "#ffffff"     # LIGHTEST
+
+titleFontColor = "#30e3ca"      # CUSTOM COLOR
+
 
 x = dt.datetime.now()
 
@@ -213,7 +215,7 @@ class HomeScreen(Frame):
         self.DayToday = Label(self.headerFrame, textvariable=datetoday, bg=headerColor, fg=headerFontColor, font=("Calibri 12")).place(x=170, y=68)
 
         Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=580, y=35)
-        self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=secondarybuttonColor, fg=buttonFontColor, font=("Calibri 12"),
+        self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
             command=self.newTask.newTask).place(x=580, y=68, width=85, height=28)
 
         
@@ -226,24 +228,24 @@ class HomeScreen(Frame):
 
     def headerFrame(self):
         self.headerFrame = Frame(self)
-        self.headerFrame.place(x=0, y=0, width=1000, height=130)
+        self.headerFrame.place(x=0, y=0, width=1000, height=150)
         self.headerFrame.configure(bg=headerColor)
 
     def menuFrame(self):
         self.menuFrame = Frame(self)
-        self.menuFrame.place(x=0, y=0, width = 130, height = 700)
+        self.menuFrame.place(x=0, y=0, width = 150, height = 700)
         self.menuFrame.configure(bg=menuColor)
 
-        Label(self.menuFrame, image=self.menuLogo, bg = mainColor).place(x=0, y=0, width=130, height=130)
+        Label(self.menuFrame, image=self.menuLogo, bg = menuColor).place(x=0, y=0, width=150, height=150)
         Button(self.menuFrame, image=self.menuHome, bg = menuColor, relief = FLAT,
-                command=lambda: self.controller.show_frame("HomeScreen")).place(x=0, y=140, width=130)
+                command=lambda: self.controller.show_frame("HomeScreen")).place(x=0, y=150, width=150)
         Button(self.menuFrame, image=self.menuTask, bg = menuColor, relief = FLAT,
-                command=lambda: self.controller.show_frame("TaskScreen")).place(x=0, y=180, width=130)
+                command=lambda: self.controller.show_frame("TaskScreen")).place(x=0, y=190, width=150)
         Button(self.menuFrame, image=self.menuSubject, bg = menuColor, relief = FLAT, 
-                command=lambda: self.controller.show_frame("SubjectScreen")).place(x=0, y=220, width=130)
+                command=lambda: self.controller.show_frame("SubjectScreen")).place(x=0, y=230, width=150)
         Button(self.menuFrame, image=self.menuProgress, bg = menuColor, relief = FLAT,
-                command=lambda: self.controller.show_frame("ProgressScreen")).place(x=0, y=260, width=130)
-        Button(self.menuFrame, image=self.menuSettings, bg = menuColor, relief = FLAT).place(x=0, y=650, width=130)
+                command=lambda: self.controller.show_frame("ProgressScreen")).place(x=0, y=270, width=150)
+        Button(self.menuFrame, image=self.menuSettings, bg = menuColor, relief = FLAT).place(x=0, y=650, width=150)
 
     def imagesUsed(self):
         self.menuLogo = PhotoImage(file="images\menulogo.png")
@@ -269,7 +271,7 @@ class TaskScreen(Frame):
 
             Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=25)
             self.DayToday = Label(self.headerFrame, textvariable=datetoday, bg=headerColor, fg=headerFontColor, font=("Calibri 12")).place(x=170, y=58)
-            self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=secondarybuttonColor, fg=buttonFontColor, font=("Calibri 12"),
+            self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170, y=83, width=85, height=28)
 
 
@@ -299,35 +301,35 @@ class TaskScreen(Frame):
             self.typeVar = StringVar(self.root)
 
             # Subject OptionMenu (Dropdown)
-            Label(self.newTaskFrame, text = "Subject", bg = homeColor, fg = secondaryFontColor, font = ("Calibri 10")).place(x=20, y=20)
+            Label(self.newTaskFrame, text = "Subject", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=20, y=20)
             self.Subject = OptionMenu(self.newTaskFrame, self.subjVar, "Subject1", "Subject2", "Subject3")
             self.Subject["highlightthickness"]=0
             self.Subject.place(x=25, y=45)
             
             # Due Date
-            Label(self.newTaskFrame, text = "Due Date", bg = homeColor, fg = secondaryFontColor, font = ("Calibri 10")).place(x=20, y=80)
-            self.DueDate = DateEntry(self.newTaskFrame, date_pattern = "y-mm-dd", foreground = secondaryFontColor, background = "steel blue")
+            Label(self.newTaskFrame, text = "Due Date", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=20, y=80)
+            self.DueDate = DateEntry(self.newTaskFrame, date_pattern = "y-mm-dd", foreground = labelDarkFontColor, background = "steel blue")
             self.DueDate.place(x=25, y=105, height = 25)
 
             # Type OptionMenu (Dropdown)
-            Label(self.newTaskFrame, text = "Type", bg = homeColor, fg = secondaryFontColor, font = ("Calibri 10")).place(x=340, y=80)
+            Label(self.newTaskFrame, text = "Type", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=340, y=80)
             self.Type = OptionMenu(self.newTaskFrame, self.typeVar, "Assignment", "Exam", "Quiz")
             self.Type["highlightthickness"]=0
             self.Type.place(x=345, y=105)
 
             # Title (Entry)
-            Label(self.newTaskFrame, text = "Title", bg = homeColor, fg = secondaryFontColor, font = ("Calibri 10")).place(x=20, y=140)
+            Label(self.newTaskFrame, text = "Title", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=20, y=140)
             self.Title = Entry(self.newTaskFrame, font = ("Calibri 10"))
             self.Title.place(x=25, y=165, width = 415, height = 28)
             
             # Details (Entry)
-            Label(self.newTaskFrame, text = "Detail", bg = homeColor, fg = secondaryFontColor, font = ("Calibri 10")).place(x=20, y=200)
+            Label(self.newTaskFrame, text = "Detail", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=20, y=200)
             self.Details = ScrolledText(self.newTaskFrame, font = ("Calibri 10"))
             self.Details.place(x=25, y=225, height = 140, width = 550)
 
             # Cancel and Save (Button)
-            Button(self.newTaskFrame, command = self.cancel, text = "Cancel", bg = secondarybuttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=25, y=379)
-            Button(self.newTaskFrame, command = self.save, text = "Save", width = 5, bg = secondarybuttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=525, y=379)
+            Button(self.newTaskFrame, command = self.cancel, text = "Cancel", bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=25, y=379)
+            Button(self.newTaskFrame, command = self.save, text = "Save", width = 5, bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=525, y=379)
 
             # Alert Message 
             Label(self.newTaskFrame, textvariable=self.newTaskAlert, bg=homeColor, fg="red", font = ("Calibri 9")).place(x=300, y=400)
