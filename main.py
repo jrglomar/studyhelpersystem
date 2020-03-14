@@ -12,18 +12,21 @@ mainColor = "#27496d"           # THE START SCREEN MAIN COLOR   (DARKER)
 menuColor = "#21243d"           # THE MENU FRAME COLOR          (DARKEST)       
 buttonColor = "#21243d"         # THE BUTTON COLOR              (DARKEST) OR (LIGHTEST)
 
-
 headerFontColor = "#ffffff"     # LIGHTER
 labelFontColor = "#ffffff"      # LIGHT
 labelDarkFontColor = "#000000"  # DARK
 buttonFontColor = "#ffffff"     # LIGHTEST
-
 titleFontColor = "#30e3ca"      # CUSTOM COLOR
 
 
-x = dt.datetime.now()
+date = dt.datetime.now()           # GET DATE NOW
+mixed = (date.strftime("%A")
+ + ", " + date.strftime("%B") 
+ + " " + date.strftime("%d"))      # FOR LABEL TODAY
+lastyear = (date.strftime("%Y"))
+lastyear = str(int(lastyear)-1) # GET LAST YEAR
 
-def defaultReso(parent):
+def defaultReso(parent):        # DEFAULT RESO TO CENTER SCREEN
     root = parent
     width = root.winfo_screenwidth()
     height = root.winfo_screenheight()
@@ -33,13 +36,8 @@ def defaultReso(parent):
 
     return reso
 
-def getDateToday():
-    
-    mixed = (x.strftime("%A") + ", " + x.strftime("%B") + " " + x.strftime("%d"))
 
-    return mixed
 
-getDateToday()
 class App(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
@@ -53,7 +51,7 @@ class App(Tk):
 
         self.frames = {}
         for F in (LoginScreen, RegistrationScreen, HomeScreen,
-        SubjectScreen, TaskScreen, ProgressScreen):
+        ScheduleScreen, TaskScreen, ProgressScreen):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -67,9 +65,6 @@ class App(Tk):
         frame = self.frames[page_name]
         frame.tkraise()
 
-
-
-# ================================================== LOGIN SCREEN ================================================== #
 class LoginScreen(Frame):
 
     def __init__(self, parent, controller):
@@ -106,16 +101,12 @@ class LoginScreen(Frame):
         Label(self.homeFrame, text="Don't have an account yet?", bg=mainColor, fg=labelFontColor, font =("Calibri 9")).place(x=122, y=650, width=200)
         Button(self.homeFrame, text="Click here", bg=mainColor, fg=titleFontColor, font = ("Calibri 9"), relief=FLAT,
                 command=lambda: controller.show_frame("RegistrationScreen")).place(x=300, y=648, width=55)
-
-        
-
+    
     def homeFrame(self):
         self.homeFrame = Frame(self)
         self.homeFrame.place(x=250, y=0, width=500, height=700)
         self.homeFrame.configure(bg=mainColor)
 
-
-# ================================================== REGISTRATION SCREEN ================================================== #
 class RegistrationScreen(Frame):
 
     def __init__(self, parent, controller):
@@ -158,8 +149,6 @@ class RegistrationScreen(Frame):
         Button(self.homeFrame, text="Click here", bg=mainColor, fg=titleFontColor, font = ("Calibri 9"), relief=FLAT,
                 command=lambda: controller.show_frame("LoginScreen")).place(x=300, y=648, width=55)
 
-
-
     def homeFrame(self):
         self.homeFrame = Frame(self)
         self.homeFrame.place(x=250, y=0, width=500, height=700)
@@ -195,8 +184,6 @@ class RegistrationScreen(Frame):
         else:
                 self.regAlert.set("Invalid username. Use alphanumeric only.")
 
-
-# ================================================== HOME SCREEN ================================================== #
 class HomeScreen(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
@@ -209,17 +196,16 @@ class HomeScreen(Frame):
 
 
         datetoday = StringVar()
-        datetoday.set(getDateToday())
+        datetoday.set(mixed)
 
-        Label(self.headerFrame, text="Today", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=35)
-        self.DayToday = Label(self.headerFrame, textvariable=datetoday, bg=headerColor, fg=headerFontColor, font=("Calibri 12")).place(x=170, y=68)
+        Label(self.headerFrame, text="Today", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
+        self.DayToday = Label(self.headerFrame, textvariable=datetoday, bg=headerColor, fg=headerFontColor, font=("Calibri 13")).place(x=170, y=75)
 
-        Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=580, y=35)
+        Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=470, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
-            command=self.newTask.newTask).place(x=580, y=68, width=85, height=28)
-
+            command=self.newTask.newTask).place(x=470, y=80, width=90, height=30)
         
-
+        Label(self.headerFrame, text="Exams", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=750, y=40)
 
     def homeFrame(self):
         self.homeFrame = Frame(self)
@@ -242,7 +228,7 @@ class HomeScreen(Frame):
         Button(self.menuFrame, image=self.menuTask, bg = menuColor, relief = FLAT,
                 command=lambda: self.controller.show_frame("TaskScreen")).place(x=0, y=190, width=150)
         Button(self.menuFrame, image=self.menuSubject, bg = menuColor, relief = FLAT, 
-                command=lambda: self.controller.show_frame("SubjectScreen")).place(x=0, y=230, width=150)
+                command=lambda: self.controller.show_frame("ScheduleScreen")).place(x=0, y=230, width=150)
         Button(self.menuFrame, image=self.menuProgress, bg = menuColor, relief = FLAT,
                 command=lambda: self.controller.show_frame("ProgressScreen")).place(x=0, y=270, width=150)
         Button(self.menuFrame, image=self.menuSettings, bg = menuColor, relief = FLAT).place(x=0, y=650, width=150)
@@ -255,8 +241,6 @@ class HomeScreen(Frame):
         self.menuProgress = PhotoImage(file="images\menuprogress.png")
         self.menuSettings = PhotoImage(file="images\menusettings.png")
 
-    
-
 class TaskScreen(Frame):
     def __init__(self, parent, controller):
             Frame.__init__(self, parent)
@@ -266,14 +250,9 @@ class TaskScreen(Frame):
             self.defaultFrame = HomeScreen.headerFrame(self)
             self.defaultFrame = HomeScreen.menuFrame(self)
 
-            datetoday = StringVar()
-            datetoday.set(getDateToday())
-
-            Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=25)
-            self.DayToday = Label(self.headerFrame, textvariable=datetoday, bg=headerColor, fg=headerFontColor, font=("Calibri 12")).place(x=170, y=58)
+            Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
             self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
-                command=self.newTask).place(x=170, y=83, width=85, height=28)
-
+                command=self.newTask).place(x=170, y=80, width=90, height=30)
 
     # New Task Screen
     def newTask(self):
@@ -294,7 +273,7 @@ class TaskScreen(Frame):
 
             # Content of Header Frame
             Label(self.newTaskHeader, text = "New Task", bg=headerColor, fg=buttonFontColor, font = ("Calibri 24 bold")).place(x=20, y=10)
-            Label(self.newTaskHeader, text = str(x.strftime("%Y")), bg = headerColor, fg="white", font=("Calibri 12 bold")).place(x=20, y=45)
+            Label(self.newTaskHeader, text = str(date.strftime("%Y")), bg = headerColor, fg="white", font=("Calibri 12 bold")).place(x=20, y=45)
 
             # Content of Middle Frame
             self.subjVar = StringVar(self.root)
@@ -334,7 +313,6 @@ class TaskScreen(Frame):
             # Alert Message 
             Label(self.newTaskFrame, textvariable=self.newTaskAlert, bg=homeColor, fg="red", font = ("Calibri 9")).place(x=300, y=400)
             
-
     # Validation for new Task    
     def save(self):
         self.db = UserDb()
@@ -361,8 +339,8 @@ class TaskScreen(Frame):
     def cancel(self):
         self.root.destroy()
 
-class SubjectScreen(Frame):
-    def __init__(self, parent, controller):
+class ScheduleScreen(Frame):
+        def __init__(self, parent, controller):
             Frame.__init__(self, parent)
             self.controller = controller
             self.defaultFrame = HomeScreen.imagesUsed(self)
@@ -370,6 +348,45 @@ class SubjectScreen(Frame):
             self.defaultFrame = HomeScreen.headerFrame(self)
             self.defaultFrame = HomeScreen.menuFrame(self)
             
+            Label(self.headerFrame, text="Schedule", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
+            Label(self.headerFrame, text = lastyear + "-" + (str(date.strftime("%Y"))), bg = headerColor, fg="white", font=("Calibri 13")).place(x=170, y=75)
+
+            Label(self.headerFrame, text="Manage Subject", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=620, y=40)
+            self.createTaskButton = Button(self.headerFrame, text="New Subject +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
+            command=self.newSubject).place(x=620, y=80, width=120, height=30)
+
+        def newSubject(self):
+            self.root = Tk()
+            self.root.geometry("600x510+500+200")
+            self.root.title("Create new subject")
+            
+            self.newSubjectFrame = Frame(self.root)
+            self.newSubjectFrame.place(x=0, y=80, width=600, height=430)
+            self.newSubjectFrame.configure(bg=homeColor)
+
+            self.newSubjectHeader = Frame(self.root)
+            self.newSubjectHeader.place(x=0, y=0, width=600, height=90)
+            self.newSubjectHeader.configure(bg=headerColor)
+
+            self.newSubjectAlert = StringVar()
+
+            # Content of Header Frame
+            Label(self.newSubjectHeader, text = "New Subject", bg=headerColor, fg=buttonFontColor, font = ("Calibri 24 bold")).place(x=20, y=20)
+
+            # Content of Middle Frame
+            self.subjVar = StringVar(self.root)
+            self.typeVar = StringVar(self.root)
+
+            # Cancel and Save (Button)
+            Button(self.newTaskFrame, command = self.cancel, text = "Cancel", bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=25, y=379)
+            Button(self.newTaskFrame, command = self.save, text = "Save", width = 5, bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=525, y=379)
+
+            # Alert Message 
+            Label(self.newTaskFrame, textvariable=self.newTaskAlert, bg=homeColor, fg="red", font = ("Calibri 9")).place(x=300, y=400)
+
+
+
+          
 class ProgressScreen(Frame):
     def __init__(self, parent, controller):
             Frame.__init__(self, parent)
@@ -378,6 +395,7 @@ class ProgressScreen(Frame):
             self.defaultFrame = HomeScreen.homeFrame(self)
             self.defaultFrame = HomeScreen.headerFrame(self)
             self.defaultFrame = HomeScreen.menuFrame(self)
+
 
 
 if __name__ == "__main__":
