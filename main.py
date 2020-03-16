@@ -467,28 +467,69 @@ class ScheduleScreen(Frame):
 
             # Cancel and Save (Button)
             Button(self.newSubjectFrame, text = "Cancel", bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=25, y=379)
-            Button(self.newSubjectFrame, text = "Save", width = 5, bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=525, y=379)
+            Button(self.newSubjectFrame, command = self.save, text = "Save", width = 5, bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=525, y=379)
+
+
 
 
         def subjectInfoEntries(self):
                 Label(self.newSubjectFrame, text="Start Time", bg=homeColor, fg=labelDarkFontColor, font =("Calibri 10")).place(x=25, y=125)
-                self.starthour = Spinbox(self.newSubjectFrame, values=("12", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")).place(x=25, y=150, width=35)
+                self.starthour = Spinbox(self.newSubjectFrame, values=("12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"))
+                self.starthour.place(x=25, y=150, width=35)
                 self.startminute = Spinbox(self.newSubjectFrame, values=("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
                 "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
                 "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
                 "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"
-                )).place(x=65, y=150, width=35)
-                self.startday = Spinbox(self.newSubjectFrame, values=("am", "pm")).place(x=105, y=150, width=40)
+                ))
+                self.startminute.place(x=65, y=150, width=35)
+                self.startday = Spinbox(self.newSubjectFrame, values=("am", "pm"))
+                self.startday.place(x=105, y=150, width=40)
 
                 Label(self.newSubjectFrame, text="End Time", bg=homeColor, fg=labelDarkFontColor, font =("Calibri 10")).place(x=275, y=125)
-                self.endhour = Spinbox(self.newSubjectFrame, values=("12", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")).place(x=275, y=150, width=35)
+                self.endhour = Spinbox(self.newSubjectFrame, values=("12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"))
+                self.endhour.place(x=275, y=150, width=35)
                 self.endminute = Spinbox(self.newSubjectFrame, values=("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
                 "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
                 "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
                 "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"
-                )).place(x=315, y=150, width=35)
-                self.endday = Spinbox(self.newSubjectFrame, values=("pm", "am")).place(x=355, y=150, width=40)
+                ))
+                self.endminute.place(x=315, y=150, width=35)
+                self.endday = Spinbox(self.newSubjectFrame, values=("pm", "am"))
+                self.endday.place(x=355, y=150, width=40)
 
+
+        def save(self):
+                if self.SubjectName.get() == "" or self.day.get() == "":
+                        Label(self.newSubjectFrame, text="Please fill all the blanks", bg=homeColor, fg="red", font=("Calibri 10")).place(x=200, y=400, width=200)
+                elif self.day.get() == "" or self.Details.get('1.0', END) == "":
+                        Label(self.newSubjectFrame, text="Please fill all the blanks", bg=homeColor, fg="red", font=("Calibri 10")).place(x=200, y=400, width=200)
+                else:
+                        data = self.validation()
+                        self.db = Subject()
+                        self.db.newSubject(data)
+                        self.root.destroy()
+
+
+        def validation(self):
+                Subject = self.SubjectName.get()
+                Day = self.day.get()
+                Details = self.Details.get('1.0', END)
+
+                if self.startday.get() == "pm" and self.starthour.get() != "12":
+                        starthour = int(self.starthour.get()) + 12
+                        self.startTime = str(starthour) + ":" + self.startminute.get() + ":00"
+                else:
+                        self.startTime = self.starthour.get() + ":" + self.startminute.get() + ":00"
+
+                if self.endday.get() == "pm" and self.endhour.get() != "12":
+                        endhour = int(self.endhour.get()) + 12
+                        self.endTime = str(endhour) + ":" + self.endminute.get() + ":00"
+                else:
+                        self.endTime = self.endhour.get() + ":" + self.endminute.get() + ":00"
+
+                data = (Subject, Day, Details, self.startTime, self.endTime, studID)
+
+                return data
 class ProgressScreen(Frame):
     def __init__(self, parent, controller):
             Frame.__init__(self, parent)

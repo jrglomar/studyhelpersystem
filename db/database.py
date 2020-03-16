@@ -126,4 +126,15 @@ class DisplayData:
         self.mydb.commit()
 
         return x
-    
+
+
+class Subject:
+    def __init__(self):
+        self.mydb = mydb
+        self.cursor = cursor
+
+    def newSubject(self, data):
+        self.cursor.execute("INSERT INTO SUBJECT (Name, Day_Schedule, Description, Start_Time, End_Time, StudentID) VALUES (%s, %s, %s, %s, %s, %s);",
+                            (data)
+        )
+        self.mydb.commit()
