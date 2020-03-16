@@ -27,7 +27,9 @@ lastyear = (date.strftime("%Y"))
 lastyear = str(int(lastyear)-1) # GET LAST YEAR
 
 ### 
-StudentID = 0
+
+studID = 0
+
 
 def defaultReso(parent):        # DEFAULT RESO TO CENTER SCREEN
     root = parent
@@ -38,8 +40,6 @@ def defaultReso(parent):        # DEFAULT RESO TO CENTER SCREEN
     reso = "1000x700+" + str(x) + "+" + str(y)
 
     return reso
-
-
 
 class App(Tk):
     def __init__(self, *args, **kwargs):
@@ -96,7 +96,7 @@ class LoginScreen(Frame):
 
         # LOGIN BUTTON
         Button(self.homeFrame, text="Login", bg=buttonColor, fg=buttonFontColor, font=("Calibri 10"), relief = FLAT,
-                command=lambda: controller.show_frame("HomeScreen")).place(x=180, y=550, width=150)
+                command=self.userLogin).place(x=180, y=550, width=150)
 
         # ALERT LABEL
         Label(self.homeFrame, textvariable=self.logAlert, bg=mainColor, fg="red", font = ("Calibri 9")).place(x=0, y=580, width=500)
@@ -111,6 +111,27 @@ class LoginScreen(Frame):
         self.homeFrame.place(x=250, y=0, width=500, height=700)
         self.homeFrame.configure(bg=mainColor)
 
+    def userLogin(self):
+        self.db = UserDb()
+        data = (self.userLoginEntry.get(), self.passLoginEntry.get())
+
+        if self.userLoginEntry.get() == "":
+                self.logAlert.set("Enter Username First")
+        elif self.passLoginEntry.get() == "":
+                self.logAlert.set("Enter Password First")
+                
+        else:
+                test = self.db.userLogin(data)
+                if test:
+                        x = (self.db.getStudentID(self.userLoginEntry.get()))
+                        global studID
+                        studID = x[0]
+                        self.controller.show_frame("HomeScreen")
+                else:
+                        self.logAlert.set("Wrong username/password")
+
+ 
+            
 class RegistrationScreen(Frame):
 
     def __init__(self, parent, controller):
@@ -197,7 +218,7 @@ class HomeScreen(Frame):
         self.headerFrame()
         self.menuFrame()
         self.newTask = TaskScreen(self, controller)
-
+        
 
         datetoday = StringVar()
         datetoday.set(mixed)
@@ -254,17 +275,14 @@ class TaskScreen(Frame):
         self.defaultFrame = HomeScreen.headerFrame(self)
         self.defaultFrame = HomeScreen.menuFrame(self)
 
+
+
+
         Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170, y=80, width=90, height=30)
 
-        y = 180
-        for i in range(4):
-                self.labelframe = Frame(self)
-                self.labelframe.place(x=180, y=y, width=300, height=30)
-                self.labelframe.configure(bg="white")
-                y += 50
-
+        
         
     # New Task Screen
     def newTask(self):
@@ -288,16 +306,16 @@ class TaskScreen(Frame):
             Label(self.newTaskHeader, text = str(date.strftime("%Y")), bg = headerColor, fg="white", font=("Calibri 12 bold")).place(x=20, y=45)
 
             # Content of Middle Frame
-            db = UserDb()
+            self.db = GetTaskType()
             self.subjVar = StringVar(self.root)
             self.typeVar = StringVar(self.root)
             self.remindertype = []
-            self.gettype = (db.getType())
+            self.gettype = (self.db.getType())
             for x in self.gettype:
                 for y in x:
                         self.remindertype.append(y)
             
-
+            
             # Subject OptionMenu (Dropdown)
             Label(self.newTaskFrame, text = "Subject", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=20, y=20)
             self.Subject = OptionMenu(self.newTaskFrame, self.subjVar, "Subject1", "Subject2", "Subject3")
@@ -333,14 +351,11 @@ class TaskScreen(Frame):
             # Alert Message 
             Label(self.newTaskFrame, textvariable=self.newTaskAlert, bg=homeColor, fg="red", font = ("Calibri 9")).place(x=300, y=400)
             
-
-    
     def newType(self):
         self.typewindow = Tk()
         self.typewindow.geometry("300x100+700+300")
         self.typewindow.title("Create reminder type")
         self.typewindow.resizable(width=False, height=False)
-
 
         self.newTypeFrame = Frame(self.typewindow)
         self.newTypeFrame.place(x=0, y=0, width=300, height=100)
@@ -352,7 +367,6 @@ class TaskScreen(Frame):
         self.newTypeEntry.place(x=90, y=40, width=120)
         Btn = Button(self.newTypeFrame, command=self.typeSave, bg=buttonColor, fg=buttonFontColor, text="Save").place(x=115, y=65, width=70)
 
-
     def typeSave(self):
             description = self.newTypeEntry.get()
             data = (description, )
@@ -360,12 +374,14 @@ class TaskScreen(Frame):
                 Label(self.newTypeFrame, text="Please fill the blank", fg = "red", font=("Calibri 8")).place(x=0, y=5, width=300)
             else:
                 db = UserDb()
-                db.newType(data)
-                self.root.destroy()
-                self.typewindow.destroy()
-                self.newTask()
-
-
+                test = db.newType(data)
+                if test:
+                        self.root.destroy()
+                        self.typewindow.destroy()
+                        self.newTask()
+                else:
+                        Label(self.newTypeFrame, text="Type of reminder already exist", fg = "red", font=("Calibri 8")).place(x=0, y=5, width=300)
+                
     # Validation for new Task    
     def save(self):
         self.db = UserDb()
@@ -374,7 +390,8 @@ class TaskScreen(Frame):
         DueDate = self.DueDate.get()
         Details = self.Details.get('1.0', END)
 
-        data = (Type, Title, DueDate, Details, StudentID
+
+        data = (Type, Title, DueDate, Details, studID, 
         )
 
         if self.DueDate.get() == "":
