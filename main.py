@@ -26,6 +26,9 @@ mixed = (date.strftime("%A")
 lastyear = (date.strftime("%Y"))
 lastyear = str(int(lastyear)-1) # GET LAST YEAR
 
+### 
+StudentID = 0
+
 def defaultReso(parent):        # DEFAULT RESO TO CENTER SCREEN
     root = parent
     width = root.winfo_screenwidth()
@@ -46,6 +49,7 @@ class App(Tk):
         # Window Config
         self.title('Study Helper')
         self.geometry(reso)
+        self.resizable(width=False, height=False)
         container = Frame(self)
         container.place(x=0, y=0, width=1000, height=700)
 
@@ -254,16 +258,20 @@ class TaskScreen(Frame):
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170, y=80, width=90, height=30)
 
-        self.labelframe = Frame(self)
-        self.labelframe.place(x=180, y=180, width=300, height=100)
-        self.labelframe.configure(bg="white")
+        y = 180
+        for i in range(4):
+                self.labelframe = Frame(self)
+                self.labelframe.place(x=180, y=y, width=300, height=30)
+                self.labelframe.configure(bg="white")
+                y += 50
 
+        
     # New Task Screen
     def newTask(self):
             self.root = Tk()
             self.root.geometry("600x510+500+200")
             self.root.title("Create new task")
-            
+            self.root.resizable(width=False, height=False)
             
             self.newTaskFrame = Frame(self.root)
             self.newTaskFrame.place(x=0, y=80, width=600, height=430)
@@ -280,8 +288,15 @@ class TaskScreen(Frame):
             Label(self.newTaskHeader, text = str(date.strftime("%Y")), bg = headerColor, fg="white", font=("Calibri 12 bold")).place(x=20, y=45)
 
             # Content of Middle Frame
+            db = UserDb()
             self.subjVar = StringVar(self.root)
             self.typeVar = StringVar(self.root)
+            self.remindertype = []
+            self.gettype = (db.getType())
+            for x in self.gettype:
+                for y in x:
+                        self.remindertype.append(y)
+            
 
             # Subject OptionMenu (Dropdown)
             Label(self.newTaskFrame, text = "Subject", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=20, y=20)
@@ -296,9 +311,10 @@ class TaskScreen(Frame):
 
             # Type OptionMenu (Dropdown)
             Label(self.newTaskFrame, text = "Type", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=340, y=80)
-            self.Type = OptionMenu(self.newTaskFrame, self.typeVar, "Assignment", "Exam", "Quiz")
+            self.Type = OptionMenu(self.newTaskFrame, self.typeVar, *self.remindertype)
             self.Type["highlightthickness"]=0
             self.Type.place(x=345, y=105)
+            self.newTypeButton = Button(self.newTaskFrame, command = self.newType, text = "+", bg=buttonColor, fg=buttonFontColor).place(x=370, y=83, width=18, height=18)
 
             # Title (Entry)
             Label(self.newTaskFrame, text = "Title", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=20, y=140)
@@ -317,6 +333,35 @@ class TaskScreen(Frame):
             # Alert Message 
             Label(self.newTaskFrame, textvariable=self.newTaskAlert, bg=homeColor, fg="red", font = ("Calibri 9")).place(x=300, y=400)
             
+
+    
+    def newType(self):
+        self.typewindow = Tk()
+        self.typewindow.geometry("300x100+700+300")
+        self.typewindow.title("Create reminder type")
+        self.typewindow.resizable(width=False, height=False)
+
+
+        self.newTypeFrame = Frame(self.typewindow)
+        self.newTypeFrame.place(x=0, y=0, width=300, height=100)
+        
+        self.newTypeEntry = StringVar()
+
+        Label(self.newTypeFrame, text="Enter reminder type").place(x=0, y=20, width=300)
+        self.newTypeEntry = Entry(self.newTypeFrame)
+        self.newTypeEntry.place(x=90, y=40, width=120)
+        Btn = Button(self.newTypeFrame, command=self.typeSave, bg=buttonColor, fg=buttonFontColor, text="Save").place(x=115, y=65, width=70)
+        Label(self.newTypeFrame, text="", fg = "red").place(x=0, y=5, width=300)
+
+    def typeSave(self):
+            description = self.newTypeEntry.get()
+            data = (description, )
+
+            db = UserDb()
+            db.newType(data)
+            self.typewindow.destroy()
+
+
     # Validation for new Task    
     def save(self):
         self.db = UserDb()
@@ -325,7 +370,7 @@ class TaskScreen(Frame):
         DueDate = self.DueDate.get()
         Details = self.Details.get('1.0', END)
 
-        data = (Type, Title, DueDate, Details,
+        data = (Type, Title, DueDate, Details, StudentID
         )
 
         if self.DueDate.get() == "":
@@ -390,33 +435,39 @@ class ScheduleScreen(Frame):
             self.SubjectName = Entry(self.newSubjectFrame, font = ("Calibri 10"))
             self.SubjectName.place(x=25, y=80, width = 415, height = 28)
 
+            Label(self.newSubjectFrame, text="Day", bg=homeColor, fg=labelDarkFontColor, font= ("Calibri 10")).place(x=25, y=190)
+            self.selectDay = OptionMenu(self.newSubjectFrame, self.day, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+            self.selectDay["highlightthickness"]=0
+            self.selectDay.place(x=27, y=215)
+
+            Label(self.newSubjectFrame, text="Details", bg=homeColor, fg=labelDarkFontColor, font = ("Calibri 10")).place(x=24, y=260)
+            self.Details = ScrolledText(self.newSubjectFrame, font = ("Calibri 10"))
+            self.Details.place(x=27, y=285, height = 70, width = 550)
+
             # Cancel and Save (Button)
             Button(self.newSubjectFrame, text = "Cancel", bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=25, y=379)
             Button(self.newSubjectFrame, text = "Save", width = 5, bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=525, y=379)
 
-            # Alert Message 
-            Label(self.newSubjectFrame, textvariable=self.newTaskAlert, bg=homeColor, fg="red", font = ("Calibri 9")).place(x=300, y=400)
 
         def subjectInfoEntries(self):
                 Label(self.newSubjectFrame, text="Start Time", bg=homeColor, fg=labelDarkFontColor, font =("Calibri 10")).place(x=25, y=125)
                 self.starthour = Spinbox(self.newSubjectFrame, values=("12", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")).place(x=25, y=150, width=35)
-                self.startminute = Spinbox(self.newSubjectFrame, values=("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")).place(x=65, y=150, width=35)
+                self.startminute = Spinbox(self.newSubjectFrame, values=("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
+                "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+                "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
+                "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"
+                )).place(x=65, y=150, width=35)
                 self.startday = Spinbox(self.newSubjectFrame, values=("am", "pm")).place(x=105, y=150, width=40)
 
                 Label(self.newSubjectFrame, text="End Time", bg=homeColor, fg=labelDarkFontColor, font =("Calibri 10")).place(x=275, y=125)
                 self.endhour = Spinbox(self.newSubjectFrame, values=("12", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")).place(x=275, y=150, width=35)
-                self.endminute = Spinbox(self.newSubjectFrame, values=("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")).place(x=315, y=150, width=35)
+                self.endminute = Spinbox(self.newSubjectFrame, values=("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
+                "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+                "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
+                "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"
+                )).place(x=315, y=150, width=35)
                 self.endday = Spinbox(self.newSubjectFrame, values=("pm", "am")).place(x=355, y=150, width=40)
 
-                Label(self.newSubjectFrame, text="Day", bg=homeColor, fg=labelDarkFontColor, font= ("Calibri 10")).place(x=25, y=190)
-                self.selectDay = OptionMenu(self.newSubjectFrame, self.day, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-                self.selectDay["highlightthickness"]=0
-                self.selectDay.place(x=27, y=215)
-
-                Label(self.newSubjectFrame, text="Details", bg=homeColor, fg=labelDarkFontColor, font = ("Calibri 10")).place(x=24, y=260)
-                self.Details = ScrolledText(self.newSubjectFrame, font = ("Calibri 10"))
-                self.Details.place(x=27, y=285, height = 70, width = 550)
-          
 class ProgressScreen(Frame):
     def __init__(self, parent, controller):
             Frame.__init__(self, parent)
