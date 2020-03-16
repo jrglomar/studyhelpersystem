@@ -351,15 +351,19 @@ class TaskScreen(Frame):
         self.newTypeEntry = Entry(self.newTypeFrame)
         self.newTypeEntry.place(x=90, y=40, width=120)
         Btn = Button(self.newTypeFrame, command=self.typeSave, bg=buttonColor, fg=buttonFontColor, text="Save").place(x=115, y=65, width=70)
-        Label(self.newTypeFrame, text="", fg = "red").place(x=0, y=5, width=300)
+
 
     def typeSave(self):
             description = self.newTypeEntry.get()
             data = (description, )
-
-            db = UserDb()
-            db.newType(data)
-            self.typewindow.destroy()
+            if self.newTypeEntry.get() == "":
+                Label(self.newTypeFrame, text="Please fill the blank", fg = "red", font=("Calibri 8")).place(x=0, y=5, width=300)
+            else:
+                db = UserDb()
+                db.newType(data)
+                self.root.destroy()
+                self.typewindow.destroy()
+                self.newTask()
 
 
     # Validation for new Task    
