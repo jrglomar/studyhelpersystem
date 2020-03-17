@@ -21,8 +21,7 @@ class TestDb:
         for z in x:
             print(x[z])
 
-Test=TestDb()
-Test.read()
+
         
 class Validation:
     def __init__(self):
@@ -102,7 +101,7 @@ class UserDb:
 
 
 
-class GetTaskType:
+class TaskOptionMenu:
     def __init__(self):
         self.mydb = mydb
         self.cursor = cursor
@@ -112,6 +111,13 @@ class GetTaskType:
         self.mydb.commit()
         
         return (self.cursor.fetchall())
+
+    def getSubject(self):
+        self.cursor.execute("SELECT Name FROM SUBJECT;")
+        self.mydb.commit()
+
+        return (self.cursor.fetchall())
+    
 
 class DisplayData:
     def __init__(self):

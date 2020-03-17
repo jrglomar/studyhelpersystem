@@ -274,11 +274,11 @@ class TaskScreen(Frame):
         self.defaultFrame = HomeScreen.menuFrame(self)
 
 
-
-
         Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170, y=80, width=90, height=30)
+
+        
    
     # New Task Screen
     def newTask(self):
@@ -302,18 +302,23 @@ class TaskScreen(Frame):
             Label(self.newTaskHeader, text = str(date.strftime("%Y")), bg = headerColor, fg="white", font=("Calibri 12 bold")).place(x=20, y=45)
 
             # Content of Middle Frame
-            self.db = GetTaskType()
+            self.db = TaskOptionMenu()
             self.subjVar = StringVar(self.root)
             self.typeVar = StringVar(self.root)
-            self.remindertype = []
+            self.remindertype = ["", ]
             self.gettype = dict(self.db.getType())
             for x in self.gettype.values():
                 self.remindertype.append(x)
             
+            self.subjects = ["", ]
+            self.getsubject = (self.db.getSubject())
+            for y in self.getsubject:
+                    self.subjects.append(y)
+
             
             # Subject OptionMenu (Dropdown)
             Label(self.newTaskFrame, text = "Subject", bg = homeColor, fg = labelDarkFontColor, font = ("Calibri 10")).place(x=20, y=20)
-            self.Subject = OptionMenu(self.newTaskFrame, self.subjVar, "Subject1", "Subject2", "Subject3")
+            self.Subject = OptionMenu(self.newTaskFrame, self.subjVar, *self.subjects)
             self.Subject["highlightthickness"]=0
             self.Subject.place(x=25, y=45)
             
@@ -370,7 +375,7 @@ class TaskScreen(Frame):
             else:
                 db = UserDb()
                 test = db.newType(data)
-                if test:
+                if not test:
                         self.root.destroy()
                         self.typewindow.destroy()
                         self.newTask()
