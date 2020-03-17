@@ -14,15 +14,15 @@ class TestDb:
 
     def read(self):
         
-        print("Read")
-        self.cursor = cursor
-        self.mydb = mydb
-        self.cursor = self.mydb.cursor()
-        self.cursor.execute("select * from REMINDER WHERE StudentID = %s;", 
-            (5, )
-        )
-        x = self.cursor.fetchall()
-        print(x)
+        self.cursor.execute("SELECT ReminderTypeID, Description  FROM REMINDERTYPE;")
+        self.mydb.commit()
+        
+        x = dict(self.cursor.fetchall())
+        for z in x:
+            print(x[z])
+
+Test=TestDb()
+Test.read()
         
 class Validation:
     def __init__(self):
@@ -80,7 +80,7 @@ class UserDb:
             return (self.cursor.fetchone())
 
     def newTask(self, data):
-            newTask = self.cursor.execute("INSERT INTO REMINDER(Type, Title, Due_Date, Details, StudentID) VALUES(%s, %s, %s, %s, %s);",
+            newTask = self.cursor.execute("INSERT INTO REMINDER(ReminderTypeID, Title, Due_Date, Details, StudentID) VALUES(%s, %s, %s, %s, %s);",
             (data))
             self.mydb.commit()
 
@@ -108,7 +108,7 @@ class GetTaskType:
         self.cursor = cursor
 
     def getType(self):
-        self.cursor.execute("SELECT Description FROM REMINDERTYPE;")
+        self.cursor.execute("SELECT ReminderTypeID, Description  FROM REMINDERTYPE;")
         self.mydb.commit()
         
         return (self.cursor.fetchall())

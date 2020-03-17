@@ -129,9 +129,7 @@ class LoginScreen(Frame):
                         self.controller.show_frame("HomeScreen")
                 else:
                         self.logAlert.set("Wrong username/password")
-
- 
-            
+      
 class RegistrationScreen(Frame):
 
     def __init__(self, parent, controller):
@@ -281,9 +279,7 @@ class TaskScreen(Frame):
         Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170, y=80, width=90, height=30)
-
-        
-        
+   
     # New Task Screen
     def newTask(self):
             self.root = Tk()
@@ -310,10 +306,9 @@ class TaskScreen(Frame):
             self.subjVar = StringVar(self.root)
             self.typeVar = StringVar(self.root)
             self.remindertype = []
-            self.gettype = (self.db.getType())
-            for x in self.gettype:
-                for y in x:
-                        self.remindertype.append(y)
+            self.gettype = dict(self.db.getType())
+            for x in self.gettype.values():
+                self.remindertype.append(x)
             
             
             # Subject OptionMenu (Dropdown)
@@ -385,11 +380,10 @@ class TaskScreen(Frame):
     # Validation for new Task    
     def save(self):
         self.db = UserDb()
-        Type = self.typeVar.get()
+        Type = self.get_key(self.typeVar.get())
         Title = self.Title.get()
         DueDate = self.DueDate.get()
         Details = self.Details.get('1.0', END)
-
 
         data = (Type, Title, DueDate, Details, studID, 
         )
@@ -408,6 +402,13 @@ class TaskScreen(Frame):
     
     def cancel(self):
         self.root.destroy()
+
+    def get_key(self, var): 
+        for key, value in self.gettype.items(): 
+            if var == value: 
+                return key 
+  
+        return "key doesn't exist"
 
 class ScheduleScreen(Frame):
         def __init__(self, parent, controller):
@@ -469,9 +470,6 @@ class ScheduleScreen(Frame):
             Button(self.newSubjectFrame, text = "Cancel", bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=25, y=379)
             Button(self.newSubjectFrame, command = self.save, text = "Save", width = 5, bg = buttonColor, fg = buttonFontColor, font =("Calibri 11")).place(x=525, y=379)
 
-
-
-
         def subjectInfoEntries(self):
                 Label(self.newSubjectFrame, text="Start Time", bg=homeColor, fg=labelDarkFontColor, font =("Calibri 10")).place(x=25, y=125)
                 self.starthour = Spinbox(self.newSubjectFrame, values=("12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"))
@@ -497,7 +495,6 @@ class ScheduleScreen(Frame):
                 self.endday = Spinbox(self.newSubjectFrame, values=("pm", "am"))
                 self.endday.place(x=355, y=150, width=40)
 
-
         def save(self):
                 if self.SubjectName.get() == "" or self.day.get() == "":
                         Label(self.newSubjectFrame, text="Please fill all the blanks", bg=homeColor, fg="red", font=("Calibri 10")).place(x=200, y=400, width=200)
@@ -508,7 +505,6 @@ class ScheduleScreen(Frame):
                         self.db = Subject()
                         self.db.newSubject(data)
                         self.root.destroy()
-
 
         def validation(self):
                 Subject = self.SubjectName.get()
@@ -530,6 +526,7 @@ class ScheduleScreen(Frame):
                 data = (Subject, Day, Details, self.startTime, self.endTime, studID)
 
                 return data
+               
 class ProgressScreen(Frame):
     def __init__(self, parent, controller):
             Frame.__init__(self, parent)
