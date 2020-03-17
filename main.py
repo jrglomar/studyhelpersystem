@@ -32,14 +32,14 @@ studID = 0
 username = ""
 
 
-def initID():
+def initID(page):
         db = UserDb()
         global username
         x = (db.getStudentID(username))
         global studID
         studID = x[0]
         app = App()
-        app.show_frame("HomeScreen")
+        app.show_frame(page)
         app.mainloop()
 
 
@@ -137,8 +137,7 @@ class LoginScreen(Frame):
                         global username
                         username = self.userLoginEntry.get()
                         self.controller.destroy()
-                        initID()
-                        
+                        initID("HomeScreen")
                         
                 else:
                         self.logAlert.set("Wrong username/password")
@@ -285,15 +284,58 @@ class TaskScreen(Frame):
         self.defaultFrame = HomeScreen.homeFrame(self)
         self.defaultFrame = HomeScreen.headerFrame(self)
         self.defaultFrame = HomeScreen.menuFrame(self)
+
+        self.taskScreenFrame = Frame(self)
+        self.taskScreenFrame.place(x=150, y=150)
+        self.taskScreenFrame.configure(bg=homeColor)
         
-        self.id = studID
+        
+
+        self.display = DisplayData()
+        x = self.display.displayTask(studID)
+        data = []
+        for row in x:
+                data.append(row)
+
+        TaskID = []
+        StudentID = []
+        ReminderTypeID = []
+        Title = []
+        Date = []
+        Detail = []
+        i = 0
+        for d in data:
+                TaskID.append(d[0])
+                StudentID.append(d[1])
+                ReminderTypeID.append(d[2])
+                Title.append(d[3])
+                Date.append(d[4])
+                Detail.append(d[5])
+
+        for i in range(0, len(x), 1):
+                self.listFrame = Frame(self.taskScreenFrame)
+                self.listFrame.grid(row=i, column=0, padx=10, pady=10)
+                self.listFrame.configure(width=200, height=100)
+
+                # self.contentFrame = Frame(self.listFrame)
+                # self.contentFrame.place(x=0, y=0, width=200, height=100)
+
+                Label(self.listFrame, text=("Title: " + Title[i])).place(x=0, y=10, width=200)
+                Label(self.listFrame, text=("Due Date: " + str(Date[i]))).place(x=0, y=30, width=200)
+                Button(self.listFrame, text="View", bg=buttonColor, fg=buttonFontColor).place(x=75, y=70, width=50)
+                
+
+                        
+                
+        
+
+        
+        
 
         Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170       , y=80, width=90, height=30)
         
-
-        print(studID)
     # New Task Screen
     def newTask(self):
             self.root = Tk()
@@ -404,7 +446,6 @@ class TaskScreen(Frame):
         DueDate = self.DueDate.get()
         Details = self.Details.get('1.0', END)
 
-        print(studID)
 
         data = (Type, Title, DueDate, Details, studID, 
         )
@@ -422,6 +463,8 @@ class TaskScreen(Frame):
         else:
                 self.db.newTask(data)
                 self.root.destroy()
+                self.controller.destroy()
+                initID("TaskScreen")
     
     def cancel(self):
         self.root.destroy()
@@ -528,6 +571,8 @@ class ScheduleScreen(Frame):
                         self.db = Subject()
                         self.db.newSubject(data)
                         self.root.destroy()
+                        self.controller.destroy()
+                        initID("SubjectScreen")
 
         def validation(self):
                 Subject = self.SubjectName.get()

@@ -132,8 +132,7 @@ class DisplayData:
         self.mydb.commit()
 
         return x
-
-
+        
 class Subject:
     def __init__(self):
         self.mydb = mydb
