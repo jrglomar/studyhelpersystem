@@ -29,6 +29,18 @@ lastyear = str(int(lastyear)-1) # GET LAST YEAR
 ### 
 
 studID = 0
+username = ""
+
+
+def initID():
+        db = UserDb()
+        global username
+        x = (db.getStudentID(username))
+        global studID
+        studID = x[0]
+        app = App()
+        app.show_frame("HomeScreen")
+        app.mainloop()
 
 
 def defaultReso(parent):        # DEFAULT RESO TO CENTER SCREEN
@@ -63,7 +75,6 @@ class App(Tk):
             frame.place(x=0, y=0, width=1000, height=1000)
             frame.configure(bg=mainColor)
 
-        self.show_frame("LoginScreen")
 
     def show_frame(self, page_name):
         frame = self.frames[page_name]
@@ -123,10 +134,12 @@ class LoginScreen(Frame):
         else:
                 test = self.db.userLogin(data)
                 if test:
-                        x = (self.db.getStudentID(self.userLoginEntry.get()))
-                        global studID
-                        studID = x[0]
-                        self.controller.show_frame("HomeScreen")
+                        global username
+                        username = self.userLoginEntry.get()
+                        self.controller.destroy()
+                        initID()
+                        
+                        
                 else:
                         self.logAlert.set("Wrong username/password")
       
@@ -272,14 +285,15 @@ class TaskScreen(Frame):
         self.defaultFrame = HomeScreen.homeFrame(self)
         self.defaultFrame = HomeScreen.headerFrame(self)
         self.defaultFrame = HomeScreen.menuFrame(self)
-
+        
+        self.id = studID
 
         Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
-                command=self.newTask).place(x=170, y=80, width=90, height=30)
-
+                command=self.newTask).place(x=170       , y=80, width=90, height=30)
         
-   
+
+        print(studID)
     # New Task Screen
     def newTask(self):
             self.root = Tk()
@@ -390,6 +404,8 @@ class TaskScreen(Frame):
         DueDate = self.DueDate.get()
         Details = self.Details.get('1.0', END)
 
+        print(studID)
+
         data = (Type, Title, DueDate, Details, studID, 
         )
 
@@ -400,6 +416,8 @@ class TaskScreen(Frame):
         elif self.Title.get() == "":
                 self.newTaskAlert.set("Please fill up the blanks")
         elif self.Details.get(('1.0'), END) == "":
+                self.newTaskAlert.set("Please fill up the blanks")
+        elif self.typeVar.get() == "":
                 self.newTaskAlert.set("Please fill up the blanks")
         else:
                 self.db.newTask(data)
@@ -545,4 +563,5 @@ class ProgressScreen(Frame):
 
 if __name__ == "__main__":
     app = App()
+    app.show_frame("LoginScreen")
     app.mainloop()
