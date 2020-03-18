@@ -79,7 +79,7 @@ class UserDb:
             return (self.cursor.fetchone())
 
     def newTask(self, data):
-            newTask = self.cursor.execute("INSERT INTO REMINDER(ReminderTypeID, Title, Due_Date, Details, StudentID) VALUES(%s, %s, %s, %s, %s);",
+            newTask = self.cursor.execute("INSERT INTO REMINDER(ReminderTypeID, Title, Due_Date, Details, StudentID, Subject) VALUES(%s, %s, %s, %s, %s, %s);",
             (data))
             self.mydb.commit()
 
@@ -142,4 +142,18 @@ class Subject:
         self.cursor.execute("INSERT INTO SUBJECT (Name, Day_Schedule, Description, Start_Time, End_Time, StudentID) VALUES (%s, %s, %s, %s, %s, %s);",
                             (data)
         )
+        self.mydb.commit()
+
+
+class Task:
+    def __init__(self):
+        self.mydb = mydb
+        self.cursor = cursor
+    
+    def deleteTask(self, id):
+        self.cursor.execute("DELETE FROM REMINDER WHERE ReminderID = %s;", (id, ))
+        self.mydb.commit()
+
+    def updateTask(self, data):
+        self.cursor.execute("UPDATE REMINDER SET Title=%s, Subject=%s, Details=%s, Due_Date=%s WHERE ReminderID=%s;", (data))
         self.mydb.commit()
