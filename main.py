@@ -287,14 +287,14 @@ class TaskScreen(Frame):
         self.taskScreenFrame.place(x=150, y=150)
         self.taskScreenFrame.configure(bg=homeColor)
         
-        self.dtask()    
+        self.displaytask()    
 
         Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170       , y=80, width=90, height=30)
         
 
-    def dtask(self):
+    def displaytask(self):
         self.display = DisplayData()
         x = self.display.displayTask(studID)
         data = []
