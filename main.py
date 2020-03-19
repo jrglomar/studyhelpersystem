@@ -235,7 +235,7 @@ class HomeScreen(Frame):
 
                 self.todaySchedule = Frame(self.homeFrame)
                 self.todaySchedule.place(x=160, y=160)
-                self.todaySchedule.configure(bg=mainColor)
+                self.todaySchedule.configure(bg=homeColor)
 
                 self.displayTodaySubject()
 
@@ -291,15 +291,14 @@ class HomeScreen(Frame):
                                 Label(self.todayScheduleFrame, text=("Day: " + self.Day_Schedule[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=0, y=25, width=400)
                                 btn.append(Button(self.todayScheduleFrame, command=lambda c=i: self.viewSubject(c), text="View", bg=buttonColor, fg=buttonFontColor))
                                 btn[i].place(x=175, y=45, width=50)
-                                ext.append(Button(self.todayScheduleFrame, command=lambda c=i: self.deleteSubject(c), text="x", bg="red", fg=buttonFontColor))
-                                ext[i].place(x=380, y=0, width=20, height=20)
+                                
                                 row += 1
 
         def deleteSubject(self, x):
                 self.delete = Subject()
-                self.delete.deleteSubject(self.SubjectID[x])
+                self.details.destroy()
                 self.controller.destroy()
-                initID("TaskScreen")
+                initID("HomeScreen")
 
         def viewSubject(self, x):
                 self.details = Tk()
@@ -329,6 +328,7 @@ class HomeScreen(Frame):
                 self.DayUpdate.pack(anchor=W)
 
                 Button(self.details, command= lambda: self.updateSubject(self.SubjectID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
+                Button(self.details, command=lambda: self.deleteSubject(self.SubjectID[x]), text="Delete", bg="red", fg=buttonFontColor).pack()
                 
                 self.details.mainloop()
 
@@ -691,15 +691,14 @@ class ScheduleScreen(Frame):
                                 Label(self.subjFrame, text=("Day: " + self.Day_Schedule[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=0, y=25, width=400)
                                 btn.append(Button(self.subjFrame, command=lambda c=i: self.viewSubject(c), text="View", bg=buttonColor, fg=buttonFontColor))
                                 btn[i].place(x=175, y=45, width=50)
-                                ext.append(Button(self.subjFrame, command=lambda c=i: self.deleteSubject(c), text="x", bg="red", fg=buttonFontColor))
-                                ext[i].place(x=380, y=0, width=20, height=20)
                                 row += 1
 
         def deleteSubject(self, x):
                 self.delete = Subject()
-                self.delete.deleteSubject(self.SubjectID[x])
+                self.delete.deleteSubject(x)
+                self.details.destroy()
                 self.controller.destroy()
-                initID("TaskScreen")
+                initID("ScheduleScreen")
 
         def viewSubject(self, x):
                 self.details = Tk()
@@ -729,16 +728,17 @@ class ScheduleScreen(Frame):
                 self.DayUpdate.pack(anchor=W)
 
                 Button(self.details, command= lambda: self.updateSubject(self.SubjectID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
+                Button(self.details, command=lambda: self.deleteSubject(self.SubjectID[x]), text="Delete", bg="red", fg=buttonFontColor).pack()
                 
                 self.details.mainloop()
 
         def updateSubject(self, SubjectID):
-                data = (self.SubjectUpdate.get(), self.StartUpdate.get(), self.EndUpdate.get(), self.DescriptionUpdate.get(('1.0', END)), self.DayUpdate.get(), SubjectID)
+                data = (self.SubjectUpdate.get(), self.StartUpdate.get(), self.EndUpdate.get(), self.DescriptionUpdate.get('1.0', END), self.DayUpdate.get(), SubjectID)
                 self.update = Subject()
                 self.update.updateSubject(data)
                 self.details.destroy()
                 self.controller.destroy()
-                initID("SubjectScreen")
+                initID("ScheduleScreen")
 
 
         def newSubject(self):
@@ -821,7 +821,7 @@ class ScheduleScreen(Frame):
                         self.db.newSubject(data)
                         self.root.destroy()
                         self.controller.destroy()
-                        initID("SubjectScreen")
+                        initID("ScheduleScreen")
 
         def validation(self):
                 Subject = self.SubjectName.get()
