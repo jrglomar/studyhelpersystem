@@ -112,11 +112,19 @@ class TaskOptionMenu:
         
         return (self.cursor.fetchall())
 
-    def getSubject(self):
-        self.cursor.execute("SELECT Name FROM SUBJECT;")
+    def getSubject(self, id):
+        self.cursor.execute("SELECT Name FROM SUBJECT WHERE StudentID=%s;", (id, ))
         self.mydb.commit()
 
         return (self.cursor.fetchall())
+
+    def getReminder(self, remId):
+        self.cursor.execute("SELECT Description FROM ReminderType WHERE ReminderTypeID = %s;", (remId, ))
+        self.mydb.commit()
+
+        return (self.cursor.fetchone())
+
+
     
 
 class DisplayData:
@@ -132,6 +140,7 @@ class DisplayData:
         self.mydb.commit()
 
         return x
+
         
 class Subject:
     def __init__(self):
@@ -142,6 +151,22 @@ class Subject:
         self.cursor.execute("INSERT INTO SUBJECT (Name, Day_Schedule, Description, Start_Time, End_Time, StudentID) VALUES (%s, %s, %s, %s, %s, %s);",
                             (data)
         )
+        self.mydb.commit()
+
+    def displaySubject(self, StudentID):
+        self.cursor.execute("SELECT * FROM SUBJECT WHERE StudentID = %s;", 
+            (StudentID, )
+            )
+        self.mydb.commit()
+
+        return self.cursor.fetchall()
+
+    def deleteSubject(self, id):
+        self.cursor.execute("DELETE FROM SUBJECT WHERE SubjectID = %s;", (id, ))
+        self.mydb.commit()
+
+    def updateSubject(self, data):
+        self.cursor.execute("UPDATE SUBJECT SET Name=%s, Start_Time=%s, End_Time=%s, Description=%s, Day_Schedule=%s WHERE SubjectID=%s;", (data))
         self.mydb.commit()
 
 

@@ -227,6 +227,8 @@ class HomeScreen(Frame):
         self.menuFrame()
         self.newTask = TaskScreen(self, controller)
         
+        self.display = TaskScreen(self, controller)
+        self.display.displaytask()
 
         datetoday = StringVar()
         datetoday.set(mixed)
@@ -234,11 +236,10 @@ class HomeScreen(Frame):
         Label(self.headerFrame, text="Today", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
         self.DayToday = Label(self.headerFrame, textvariable=datetoday, bg=headerColor, fg=headerFontColor, font=("Calibri 13")).place(x=170, y=75)
 
-        Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=470, y=40)
+        Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=595, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
-            command=self.newTask.newTask).place(x=470, y=80, width=90, height=30)
-        
-        Label(self.headerFrame, text="Exams", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=750, y=40)
+            command=self.newTask.newTask).place(x=595, y=80, width=90, height=30)
+
 
     def homeFrame(self):
         self.homeFrame = Frame(self)
@@ -293,7 +294,6 @@ class TaskScreen(Frame):
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170       , y=80, width=90, height=30)
         
-
     def displaytask(self):
         self.display = DisplayData()
         x = self.display.displayTask(studID)
@@ -322,21 +322,26 @@ class TaskScreen(Frame):
         row = 0
         btn = []
         ext = []
+
+
         for i in range(0, len(x), 1):
                 if row == 5:
                         column += 1
                         row = 0
                 if row < 5:
                         self.listFrame = Frame(self.taskScreenFrame, relief=RAISED, borderwidth=5)
-                        self.listFrame.grid(row=row, column=column, padx=10, pady=15)
-                        self.listFrame.configure(width=300, height=80)
+                        self.listFrame.grid(row=row, column=column, padx=10, pady=10)
+                        self.listFrame.configure(width=250, height=90)
 
-                        Label(self.listFrame, text=("Title: " + self.Title[i]), font=("Calibri 10")).place(x=7, y=5, width=250)
-                        Label(self.listFrame, text=("Due Date: " + str(self.Date[i])), font=("Calibri 10")).place(x=7, y=25, width=250)
+                        self.rem = TaskOptionMenu()
+                        self.remindertype = self.rem.getReminder(self.ReminderTypeID[i])
+
+                        Label(self.listFrame, text=("Title: " + self.Title[i]), font=("Calibri 10")).place(x=7, y=5, width=230)
+                        Label(self.listFrame, text=("Type: " + self.remindertype[0]), font=("Calibri 10")).place(x=7, y=25, width=230)
                         btn.append(Button(self.listFrame, command=lambda c=i: self.viewTask(c), text="View", bg=buttonColor, fg=buttonFontColor))
-                        btn[i].place(x=115, y=45, width=50)
+                        btn[i].place(x=100, y=45, width=50)
                         ext.append(Button(self.listFrame, command=lambda c=i: self.deleteTask(c), text="x", bg="red", fg=buttonFontColor))
-                        ext[i].place(x=270, y=0, width=20, height=20)
+                        ext[i].place(x=220, y=0, width=20, height=20)
                         row += 1
 
     def deleteTask(self, x):
@@ -350,6 +355,8 @@ class TaskScreen(Frame):
                 self.details.title("Details")
                 self.details.geometry("+600+300")
                 self.details.config(bg=homeColor)
+                
+
 
                 Label(self.details, text="Title:", font = ("Cambria 12 bold"), bg=homeColor).pack(anchor=W)
                 self.titleUpdate = Entry(self.details, font=("Cambria 10"), width=50)
@@ -405,15 +412,15 @@ class TaskScreen(Frame):
             self.db = TaskOptionMenu()
             self.subjVar = StringVar(self.root)
             self.typeVar = StringVar(self.root)
-            self.remindertype = ["", ]
+            self.remindertype = []
             self.gettype = dict(self.db.getType())
             for x in self.gettype.values():
                 self.remindertype.append(x)
             
-            self.subjects = ["", ]
-            self.getsubject = (self.db.getSubject())
+            self.subjects = ["",]
+            self.getsubject = (self.db.getSubject(studID))
             for y in self.getsubject:
-                    self.subjects.append(y)
+                self.subjects.append(y)
 
             
             # Subject OptionMenu (Dropdown)
@@ -529,13 +536,111 @@ class ScheduleScreen(Frame):
             self.defaultFrame = HomeScreen.homeFrame(self)
             self.defaultFrame = HomeScreen.headerFrame(self)
             self.defaultFrame = HomeScreen.menuFrame(self)
+
+            self.scheduleScreenFrame = Frame(self)
+            self.scheduleScreenFrame.place(x=150, y=150)
+            self.scheduleScreenFrame.configure(bg=homeColor)
             
+            self.displaySubject()
+
             Label(self.headerFrame, text="Schedule", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
             Label(self.headerFrame, text = lastyear + "-" + (str(date.strftime("%Y"))), bg = headerColor, fg="white", font=("Calibri 13")).place(x=170, y=75)
 
             Label(self.headerFrame, text="Manage Subject", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=620, y=40)
             self.createTaskButton = Button(self.headerFrame, text="New Subject +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
             command=self.newSubject).place(x=620, y=80, width=120, height=30)
+
+        def displaySubject(self):
+                self.subjectDb = Subject()
+                x = self.subjectDb.displaySubject(studID)
+                data = []
+                for row in x:
+                        data.append(row)
+
+                self.SubjectID = []
+                self.StudentID = []
+                self.SubjectName = []
+                self.Start_Time = []
+                self.End_Time = []
+                self.Day_Schedule = []
+                self.Description = []
+                i = 0
+                for d in data:
+                        self.SubjectID.append(d[0])
+                        self.StudentID.append(d[1])
+                        self.SubjectName.append(d[2])
+                        self.Start_Time.append(d[3])
+                        self.End_Time.append(d[4])
+                        self.Day_Schedule.append(d[5])
+                        self.Description.append(d[6])
+
+                column = 1
+                row = 0
+                btn = []
+                ext = []
+
+                for i in range(0, len(x), 1):
+                        if row == 5:
+                                column += 1
+                                row = 0
+                        if row < 5:
+                                self.subjFrame = Frame(self.scheduleScreenFrame, relief=RAISED, borderwidth=5)
+                                self.subjFrame.grid(row=row, column=column, padx=10, pady=10)
+                                self.subjFrame.configure(width=250, height=90)
+                                
+                                Label(self.subjFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10")).place(x=7, y=5, width=230)
+                                Label(self.subjFrame, text=("Day: " + self.Day_Schedule[i]), font=("Calibri 10")).place(x=7, y=25, width=230)
+                                btn.append(Button(self.subjFrame, command=lambda c=i: self.viewSubject(c), text="View", bg=buttonColor, fg=buttonFontColor))
+                                btn[i].place(x=100, y=45, width=50)
+                                ext.append(Button(self.subjFrame, command=lambda c=i: self.deleteSubject(c), text="x", bg="red", fg=buttonFontColor))
+                                ext[i].place(x=220, y=0, width=20, height=20)
+                                row += 1
+
+        def deleteSubject(self, x):
+                self.delete = Subject()
+                self.delete.deleteSubject(self.SubjectID[x])
+                self.controller.destroy()
+                initID("TaskScreen")
+
+        def viewSubject(self, x):
+                self.details = Tk()
+                self.details.title("Details")
+                self.details.geometry("+600+300")
+                self.details.config(bg=homeColor)
+
+                Label(self.details, text="Subject:", font = ("Cambria 12 bold"), bg=homeColor).pack(anchor=W)
+                self.SubjectUpdate = Entry(self.details, font=("Cambria 10"), width=50)
+                self.SubjectUpdate.insert(END, self.SubjectName[x])
+                self.SubjectUpdate.pack(anchor=W)
+                Label(self.details, text="Start Time:", font = ("Cambria 12 bold"), bg=homeColor).pack(anchor=W)
+                self.StartUpdate = Entry(self.details, font=("Cambria 10"), width=50)
+                self.StartUpdate.insert(END, self.Start_Time[x])
+                self.StartUpdate.pack(anchor=W)
+                Label(self.details, text="End Time:", font = ("Cambria 12 bold"), bg=homeColor).pack(anchor=W)
+                self.EndUpdate = Entry(self.details, font=("Cambria 10"), width=50)
+                self.EndUpdate.insert(END, self.End_Time[x])
+                self.EndUpdate.pack(anchor=W)
+                Label(self.details, text = "Description:", font = ("Cambria 12 bold"), bg=homeColor).pack(anchor=W)
+                self.DescriptionUpdate = Entry(self.details, font=("Cambria 10"), width=50)
+                self.DescriptionUpdate.insert(END, self.Description[x])
+                self.DescriptionUpdate.pack(anchor=W)
+                Label(self.details, text = "Day of Subject:", font = ("Cambria 12 bold"), bg=homeColor).pack(anchor=W)
+                self.DayUpdate = Entry(self.details, font=("Cambria 10"), width=50)
+                self.DayUpdate.insert(END, self.Day_Schedule[x])
+                self.DayUpdate.pack(anchor=W)
+
+                Button(self.details, command= lambda: self.updateSubject(self.SubjectID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
+                
+                self.details.mainloop()
+
+        def updateSubject(self, SubjectID):
+                data = (self.SubjectUpdate.get(), self.StartUpdate.get(), self.EndUpdate.get(), self.DescriptionUpdate.get(), self.DayUpdate.get(), SubjectID)
+                self.update = Subject()
+                self.update.updateSubject(data)
+                self.details.destroy()
+                self.controller.destroy()
+                initID("SubjectScreen")
+
 
         def newSubject(self):
             self.root = Tk()
