@@ -182,3 +182,14 @@ class Task:
     def updateTask(self, data):
         self.cursor.execute("UPDATE REMINDER SET Title=%s, Subject=%s, Details=%s, Due_Date=%s WHERE ReminderID=%s;", (data))
         self.mydb.commit()
+
+
+class Home:
+    def __init__(self):
+        self.mydb = mydb
+        self.cursor = cursor
+    def getTodaySubject(self, StudentID, DayToday):
+        self.cursor.execute("SELECT * FROM Subject WHERE StudentID = %s AND Day_Schedule = %s;", (StudentID, DayToday))
+        self.mydb.commit()
+
+        return self.cursor.fetchall()
