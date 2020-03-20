@@ -99,8 +99,6 @@ class UserDb:
         except:
             return False
 
-
-
 class TaskOptionMenu:
     def __init__(self):
         self.mydb = mydb
@@ -124,9 +122,6 @@ class TaskOptionMenu:
 
         return (self.cursor.fetchone())
 
-
-    
-
 class DisplayData:
     def __init__(self):
         self.mydb = mydb
@@ -140,7 +135,6 @@ class DisplayData:
         self.mydb.commit()
 
         return x
-
         
 class Subject:
     def __init__(self):
@@ -169,7 +163,6 @@ class Subject:
         self.cursor.execute("UPDATE SUBJECT SET Name=%s, Start_Time=%s, End_Time=%s, Description=%s, Day_Schedule=%s WHERE SubjectID=%s;", (data))
         self.mydb.commit()
 
-
 class Task:
     def __init__(self):
         self.mydb = mydb
@@ -182,7 +175,6 @@ class Task:
     def updateTask(self, data):
         self.cursor.execute("UPDATE REMINDER SET Title=%s, Subject=%s, Details=%s, Due_Date=%s WHERE ReminderID=%s;", (data))
         self.mydb.commit()
-
 
 class Home:
     def __init__(self):
@@ -199,3 +191,8 @@ class Home:
         self.mydb.commit()
 
         return self.cursor.fetchall()
+
+class Progress:
+    def __init__(self):
+        self.mydb = mydb
+        self.cursor = cursor

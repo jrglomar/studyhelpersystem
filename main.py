@@ -7,7 +7,7 @@ from tkinter.scrolledtext import ScrolledText
 
 homeColor = "#bbe1fa"           # THE HOME SCREEN MAIN COLOR    (LIGHTEST)
 headerColor = "#182952"         # THE HEADER FRAME COLOR        (DARKER)
-mainColor = "#216353"           # THE START SCREEN MAIN COLOR   (DARKER)
+mainColor = "steel blue"           # THE START SCREEN MAIN COLOR   (DARKER)
 menuColor = "#1b262c"           # THE MENU FRAME COLOR          (DARKEST)       
 buttonColor = "#1b262c"         # THE BUTTON COLOR              (DARKEST) OR (LIGHTEST)
 
@@ -27,7 +27,7 @@ lastyear = str(int(lastyear)-1) # GET LAST YEAR
 
 ### 
 
-studID = 0
+studID = 1
 username = ""
 
 
@@ -332,8 +332,9 @@ class HomeScreen(Frame):
                 self.DayUpdate.insert(END, self.Day_Schedule[x])
                 self.DayUpdate.pack(anchor=W)
 
-                Button(self.details, command= lambda: self.updateSubject(self.SubjectID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
-                Button(self.details, command=lambda: self.deleteSubject(self.SubjectID[x]), text="Delete", bg="red", fg=buttonFontColor).pack()
+                Label(self.details, text="", bg=homeColor, font = ("Calibri 2")).pack()
+                Button(self.details, command= lambda: self.updateSubject(self.SubjectID[x]), text="Update", bg="navy", fg=buttonFontColor).pack(side=RIGHT)
+                Button(self.details, command=lambda: self.deleteSubject(self.SubjectID[x]), text="Delete", bg="maroon", fg=buttonFontColor).pack(side=LEFT)
                 
                 self.details.mainloop()
 
@@ -416,8 +417,9 @@ class HomeScreen(Frame):
                 self.dueDateUpdate.insert(END, self.Due_Date[x])
                 self.dueDateUpdate.pack(anchor=W)
 
-                Button(self.details, command= lambda: self.updateTask(self.ReminderID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
-                Button(self.details, command= lambda: self.deleteTask(self.ReminderID[x]), text="Delete", bg="red", fg=buttonFontColor).pack()
+                Label(self.details, text="", bg=homeColor, font = ("Calibri 2")).pack()
+                Button(self.details, command= lambda: self.updateTask(self.ReminderID[x]), text="Update", bg="navy", fg=buttonFontColor).pack(side=LEFT)
+                Button(self.details, command= lambda: self.deleteTask(self.ReminderID[x]), text="Delete", bg="maroon", fg=buttonFontColor).pack(side=RIGHT)
                 
                 self.details.mainloop()
 
@@ -571,8 +573,9 @@ class TaskScreen(Frame):
                 self.dueDateUpdate.insert(END, self.Date[x])
                 self.dueDateUpdate.pack(anchor=W)
 
-                Button(self.details, command= lambda: self.updateTask(self.TaskID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
-                Button(self.details, command= lambda: self.deleteTask(self.TaskID[x]), text="Delete", bg="red", fg=buttonFontColor).pack()
+                Label(self.details, text="", bg=homeColor, font = ("Calibri 2")).pack()
+                Button(self.details, command= lambda: self.updateTask(self.TaskID[x]), text="Update", bg="navy", fg=buttonFontColor).pack(side=LEFT)
+                Button(self.details, command= lambda: self.deleteTask(self.TaskID[x]), text="Delete", bg="maroon", fg=buttonFontColor).pack(side=RIGHT)
                 
                 self.details.mainloop()
 
@@ -824,8 +827,9 @@ class ScheduleScreen(Frame):
                 self.DayUpdate.insert(END, self.Day_Schedule[x])
                 self.DayUpdate.pack(anchor=W)
 
-                Button(self.details, command= lambda: self.updateSubject(self.SubjectID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
-                Button(self.details, command=lambda: self.deleteSubject(self.SubjectID[x]), text="Delete", bg="red", fg=buttonFontColor).pack()
+                Label(self.details, text="", bg=homeColor, font = ("Calibri 2")).pack()
+                Button(self.details, command= lambda: self.updateSubject(self.SubjectID[x]), text="Update", bg="navy", fg=buttonFontColor).pack(side=LEFT)
+                Button(self.details, command=lambda: self.deleteSubject(self.SubjectID[x]), text="Delete", bg="maroon", fg=buttonFontColor).pack(side=RIGHT)
                 
                 self.details.mainloop()
 
@@ -942,17 +946,80 @@ class ScheduleScreen(Frame):
                 return data
                
 class ProgressScreen(Frame):
-    def __init__(self, parent, controller):
-            Frame.__init__(self, parent)
-            self.controller = controller
-            self.defaultFrame = HomeScreen.imagesUsed(self)
-            self.defaultFrame = HomeScreen.homeFrame(self)
-            self.defaultFrame = HomeScreen.headerFrame(self)
-            self.defaultFrame = HomeScreen.menuFrame(self)
+        def __init__(self, parent, controller):
+                Frame.__init__(self, parent)
+                self.controller = controller
+                self.defaultFrame = HomeScreen.imagesUsed(self)
+                self.defaultFrame = HomeScreen.homeFrame(self)
+                self.defaultFrame = HomeScreen.headerFrame(self)
+                self.defaultFrame = HomeScreen.menuFrame(self)
 
+                self.scheduleScreenFrame = Frame(self)
+                self.scheduleScreenFrame.place(x=150, y=150)
+                self.scheduleScreenFrame.configure(bg=homeColor)
+
+                self.displaySubject()
+
+                Label(self.headerFrame, text="Schedule", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
+                Label(self.headerFrame, text = lastyear + "-" + (str(date.strftime("%Y"))), bg = headerColor, fg="white", font=("Calibri 13")).place(x=170, y=75)
+
+                Label(self.headerFrame, text="Manage Subject", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=620, y=40)
+
+
+        def displaySubject(self):
+                self.subjectDb = Subject()
+                x = self.subjectDb.displaySubject(studID)
+                data = []
+                for row in x:
+                        data.append(row)
+
+                self.SubjectID = []
+                self.StudentID = []
+                self.SubjectName = []
+                self.Start_Time = []
+                self.End_Time = []
+                self.Day_Schedule = []
+                self.Description = []
+                i = 0
+                for d in data:
+                        self.SubjectID.append(d[0])
+                        self.StudentID.append(d[1])
+                        self.SubjectName.append(d[2])
+                        self.Start_Time.append(d[3])
+                        self.End_Time.append(d[4])
+                        self.Day_Schedule.append(d[5])
+                        self.Description.append(d[6])
+
+                column = 1
+                row = 0
+                btn = []
+                ext = []
+
+                for i in range(0, len(x), 1):
+                        if row == 6:
+                                column += 1
+                                row = 0
+                        if row < 6:
+                                self.subjFrame = Frame(self.scheduleScreenFrame, relief=RAISED, borderwidth=5)
+                                self.subjFrame.grid(row=row, column=column, padx=10, pady=10)
+                                self.subjFrame.configure(width=400, height=65, bg=mainColor)
+                                
+                                Label(self.subjFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=5, width=385)
+                                btn.append(Button(self.subjFrame, 
+                                command=lambda c=i: self.manageGradingSystem(c), 
+                                text="Manage Subject Progress", bg=buttonColor, fg=buttonFontColor))
+                                btn[i].place(x=100, y=25, width=200)
+                                row += 1
+
+        def manageGradingSystem(self, x):
+                self.gScreen = Tk()
+                self.gScreen.geometry("700x600+450+120")
+                self.gScreen.title("Manage Subject Progress")
+                self.gScreen.config(bg=homeColor)
+                
 
 
 if __name__ == "__main__":
     app = App()
-    app.show_frame("LoginScreen")
+    app.show_frame("ProgressScreen")
     app.mainloop()
