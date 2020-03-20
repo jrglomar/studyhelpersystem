@@ -5,11 +5,11 @@ from tkcalendar import DateEntry
 from tkinter.scrolledtext import ScrolledText
 
 
-homeColor = "#79bac1"           # THE HOME SCREEN MAIN COLOR    (LIGHTEST)
-headerColor = "#142850"         # THE HEADER FRAME COLOR        (DARKER)
-mainColor = "#27496d"           # THE START SCREEN MAIN COLOR   (DARKER)
-menuColor = "#21243d"           # THE MENU FRAME COLOR          (DARKEST)       
-buttonColor = "#21243d"         # THE BUTTON COLOR              (DARKEST) OR (LIGHTEST)
+homeColor = "#bbe1fa"           # THE HOME SCREEN MAIN COLOR    (LIGHTEST)
+headerColor = "#182952"         # THE HEADER FRAME COLOR        (DARKER)
+mainColor = "#216353"           # THE START SCREEN MAIN COLOR   (DARKER)
+menuColor = "#1b262c"           # THE MENU FRAME COLOR          (DARKEST)       
+buttonColor = "#1b262c"         # THE BUTTON COLOR              (DARKEST) OR (LIGHTEST)
 
 headerFontColor = "#ffffff"     # LIGHTER
 labelFontColor = "#ffffff"      # LIGHT
@@ -248,9 +248,10 @@ class HomeScreen(Frame):
                 self.DayToday = Label(self.headerFrame, textvariable=datetoday, bg=headerColor, fg=headerFontColor, font=("Calibri 13")).place(x=170, y=75)
                 self.Schedule = Label(self.headerFrame, text="Classes Today", fg=headerFontColor, bg=headerColor, font=("Calibri 13 bold")).place(x=170, y=120)
 
-                Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=620, y=40)
+                Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=625, y=40)
                 self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
-                command=self.newTask.newTask).place(x=620, y=80, width=90, height=30)
+                command=self.newTask.newTask).place(x=625, y=80, width=90, height=30)
+                self.Schedule = Label(self.headerFrame, text="Due Date Today", fg=headerFontColor, bg=headerColor, font=("Calibri 13 bold")).place(x=625, y=120)
 
         def displayTodaySubject(self):
                 self.displayToday = Home()
@@ -287,12 +288,12 @@ class HomeScreen(Frame):
                                 column += 1
                                 row = 0
                         if row < 5:
-                                self.todayScheduleFrame = Frame(self.todaySchedule)
+                                self.todayScheduleFrame = Frame(self.todaySchedule, relief=RAISED, borderwidth=5)
                                 self.todayScheduleFrame.grid(row=row, column=column, padx=10, pady=10)
-                                self.todayScheduleFrame.configure(width=400, height=80, bg=mainColor)
+                                self.todayScheduleFrame.configure(width=400, height=85, bg=mainColor)
                                 
-                                Label(self.todayScheduleFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=0, y=5, width=400)
-                                Label(self.todayScheduleFrame, text=("Day: " + self.Day_Schedule[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=0, y=25, width=400)
+                                Label(self.todayScheduleFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=5, width=385)
+                                Label(self.todayScheduleFrame, text=("Day: " + self.Day_Schedule[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=25, width=385)
                                 btn.append(Button(self.todayScheduleFrame, command=lambda c=i: self.viewSubject(c), text="View", bg=buttonColor, fg=buttonFontColor))
                                 btn[i].place(x=175, y=45, width=50)
                                 
@@ -380,18 +381,16 @@ class HomeScreen(Frame):
                         if row < 4:
                                 self.todayTaskSchedule = Frame(self.todayTask, relief=RAISED, borderwidth=5)
                                 self.todayTaskSchedule.grid(row=row, column=column, padx=10, pady=10)
-                                self.todayTaskSchedule.configure(width=150, height=120)
+                                self.todayTaskSchedule.configure(width=150, height=110, bg=mainColor)
                                 
                                 self.rem = TaskOptionMenu()
                                 self.remindertype = self.rem.getReminder(self.ReminderTypeID[i])
 
-                                Label(self.todayTaskSchedule, text=("Title: " + self.Title[i]), font =("Calibri 10")).place(x=7, y=5, width=130)
-                                Label(self.todayTaskSchedule, text=("Type: " + self.remindertype[0]), font=("Calibri 10")).place(x=7, y=25, width=130)
-                                Label(self.todayTaskSchedule, text=("Due Date: " + str(self.Due_Date[i])), font=("Calibri 10")).place(x=5, y=45, width=130)
+                                Label(self.todayTaskSchedule, text=("Title: " + self.Title[i]), font =("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=7, y=5, width=130)
+                                Label(self.todayTaskSchedule, text=("Type: " + self.remindertype[0]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=7, y=25, width=130)
+                                Label(self.todayTaskSchedule, text=("Due Date: " + str(self.Due_Date[i])), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=45, width=130)
                                 btn.append(Button(self.todayTaskSchedule, command=lambda c=i: self.viewTask(c), text="View", bg=buttonColor, fg=buttonFontColor))
                                 btn[i].place(x=50, y=65, width=50)
-                                ext.append(Button(self.todayTaskSchedule, command=lambda c=i: self.deleteTask(c), text="x", bg="red", fg=buttonFontColor))
-                                ext[i].place(x=125, y=0, width=15, height=15)
                                 row += 1
 
         def viewTask(self, x):
@@ -418,6 +417,7 @@ class HomeScreen(Frame):
                 self.dueDateUpdate.pack(anchor=W)
 
                 Button(self.details, command= lambda: self.updateTask(self.ReminderID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
+                Button(self.details, command= lambda: self.deleteTask(self.ReminderID[x]), text="Delete", bg="red", fg=buttonFontColor).pack()
                 
                 self.details.mainloop()
 
@@ -431,11 +431,10 @@ class HomeScreen(Frame):
 
         def deleteTask(self, x):
                 self.delete = Task()
-                self.delete.deleteTask(self.ReminderID[x])
+                self.delete.deleteTask(x)
+                self.details.destroy()
                 self.controller.destroy()
                 initID("HomeScreen")
-
-
 
         def homeFrame(self):
                 self.homeFrame = Frame(self)
@@ -490,6 +489,7 @@ class TaskScreen(Frame):
         Label(self.headerFrame, text="Tasks", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
         self.createTaskButton = Button(self.headerFrame, text="New Task +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
                 command=self.newTask).place(x=170       , y=80, width=90, height=30)
+        self.Schedule = Label(self.headerFrame, text="List of tasks", fg=headerFontColor, bg=headerColor, font=("Calibri 13 bold")).place(x=170, y=120)
         
     def displaytask(self):
         self.display = DisplayData()
@@ -528,23 +528,23 @@ class TaskScreen(Frame):
                 if row < 5:
                         self.listFrame = Frame(self.taskScreenFrame, relief=RAISED, borderwidth=5)
                         self.listFrame.grid(row=row, column=column, padx=10, pady=10)
-                        self.listFrame.configure(width=250, height=110)
+                        self.listFrame.configure(width=250, height=110, bg=mainColor)
 
                         self.rem = TaskOptionMenu()
                         self.remindertype = self.rem.getReminder(self.ReminderTypeID[i])
 
-                        Label(self.listFrame, text=("Title: " + self.Title[i]), font=("Calibri 10")).place(x=7, y=5, width=230)
-                        Label(self.listFrame, text=("Type: " + self.remindertype[0]), font=("Calibri 10")).place(x=7, y=25, width=230)
-                        Label(self.listFrame, text=("Due Date: " + str(self.Date[i])), font=("Calibri 10")).place(x=5, y=45, width=230)
+                        Label(self.listFrame, text=("Title: " + self.Title[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=7, y=5, width=230)
+                        Label(self.listFrame, text=("Type: " + self.remindertype[0]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=7, y=25, width=230)
+                        Label(self.listFrame, text=("Due Date: " + str(self.Date[i])), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=45, width=230)
                         btn.append(Button(self.listFrame, command=lambda c=i: self.viewTask(c), text="View", bg=buttonColor, fg=buttonFontColor))
                         btn[i].place(x=100, y=65, width=50)
-                        ext.append(Button(self.listFrame, command=lambda c=i: self.deleteTask(c), text="x", bg="red", fg=buttonFontColor))
-                        ext[i].place(x=220, y=0, width=20, height=20)
+                        
                         row += 1
 
     def deleteTask(self, x):
                 self.delete = Task()
-                self.delete.deleteTask(self.TaskID[x])
+                self.delete.deleteTask(x)
+                self.details.destroy()
                 self.controller.destroy()
                 initID("TaskScreen")
 
@@ -572,6 +572,7 @@ class TaskScreen(Frame):
                 self.dueDateUpdate.pack(anchor=W)
 
                 Button(self.details, command= lambda: self.updateTask(self.TaskID[x]), text="Update", bg=buttonColor, fg=buttonFontColor).pack()
+                Button(self.details, command= lambda: self.deleteTask(self.TaskID[x]), text="Delete", bg="red", fg=buttonFontColor).pack()
                 
                 self.details.mainloop()
 
@@ -779,12 +780,12 @@ class ScheduleScreen(Frame):
                                 column += 1
                                 row = 0
                         if row < 5:
-                                self.subjFrame = Frame(self.scheduleScreenFrame)
+                                self.subjFrame = Frame(self.scheduleScreenFrame, relief=RAISED, borderwidth=5)
                                 self.subjFrame.grid(row=row, column=column, padx=10, pady=10)
-                                self.subjFrame.configure(width=400, height=80, bg=mainColor)
+                                self.subjFrame.configure(width=400, height=85, bg=mainColor)
                                 
-                                Label(self.subjFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=0, y=5, width=400)
-                                Label(self.subjFrame, text=("Day: " + self.Day_Schedule[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=0, y=25, width=400)
+                                Label(self.subjFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=5, width=385)
+                                Label(self.subjFrame, text=("Day: " + self.Day_Schedule[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=25, width=385)
                                 btn.append(Button(self.subjFrame, command=lambda c=i: self.viewSubject(c), text="View", bg=buttonColor, fg=buttonFontColor))
                                 btn[i].place(x=175, y=45, width=50)
                                 row += 1
