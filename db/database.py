@@ -193,3 +193,9 @@ class Home:
         self.mydb.commit()
 
         return self.cursor.fetchall()
+
+    def getTodayTask(self, StudentID, DateToday):
+        self.cursor.execute("SELECT * FROM Reminder WHERE StudentID = %s AND Due_Date = %s;", (StudentID, DateToday))
+        self.mydb.commit()
+
+        return self.cursor.fetchall()
