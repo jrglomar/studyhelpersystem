@@ -3,7 +3,7 @@ import mysql.connector
 mydb = mysql.connector.connect(host='localhost',
                                         user='root',
                                         passwd='1234',
-                                        database='studyhelper')
+                                        database='studyhelpersystem')
 cursor = mydb.cursor(buffered=True)
 
 
@@ -196,4 +196,29 @@ class Progress:
     def __init__(self):
         self.mydb = mydb
         self.cursor = cursor
-    
+
+    def insertStandard(self, data):
+
+        for row in data:
+            self.cursor.execute("INSERT INTO GRADINGSYSTEM(SubjectID, Type, Percentage) VALUES(%s, %s, %s);", (row))
+        
+        self.mydb.commit()
+
+    def displayGs(self, SubjectID):
+
+        self.cursor.execute("SELECT GradingSystemID, Type, Percentage FROM GRADINGSYSTEM WHERE SubjectID = %s;", (SubjectID, ))
+        self.mydb.commit()
+
+        return self.cursor.fetchall()
+
+    def gsValidation(self, SubjectID):
+
+        self.cursor.execute("SELECT Percentage FROM GRADINGSYSTEM WHERE SubjectID = %s;", (SubjectID, ))
+        self.mydb.commit()
+
+        return self.cursor.fetchall()
+
+    def deleteGs(self, GradingSystemID):
+        self.cursor.execute("DELETE FROM GRADINGSYSTEM WHERE GradingSystemID = %s;", (GradingSystemID, ))
+        self.mydb.commit()
+        
