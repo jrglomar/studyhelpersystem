@@ -1013,10 +1013,55 @@ class ProgressScreen(Frame):
 
         def manageGradingSystem(self, x):
                 self.gScreen = Tk()
-                self.gScreen.geometry("700x600+450+120")
+                self.gScreen.geometry("300x120+680+250")
                 self.gScreen.title("Manage Subject Progress")
                 self.gScreen.config(bg=homeColor)
+
+                self.acadOption = ["Standard", "Custom"]
+                self.acadTypeVar = StringVar(self.gScreen)
+
+                Label(self.gScreen, text="SELECT GRADING SYSTEM", bg=homeColor, font=("Calibri 16 bold")).pack(anchor=CENTER, pady=10)
+                self.academicType = OptionMenu(self.gScreen, self.acadTypeVar, *self.acadOption)
+                self.academicType["highlightthickness"]=0
+                self.academicType.pack(anchor=CENTER, pady=0)
+                Button(self.gScreen, command = self.gradingSystem, text="Ok", bg=buttonColor, fg=buttonFontColor).pack(anchor=CENTER, pady=10)
+        
+        def gradingSystem(self):
+                acadType = self.acadTypeVar.get()
+
+                if acadType == "Standard":
+                        self.gScreen.destroy()
+                        self.newStandardScreen()
+
+                elif acadType == "Custom":
+                        self.gScreen.destroy()
+                        self.newCustomScreen()
+
+        def newStandardScreen(self):
+                self.sScreen = Tk()
+                self.sScreen.geometry("700x600+450+120")
+                self.sScreen.title("Standard Grading System")
+                self.sScreen.config(bg=homeColor)
+
+                self.sScreenTopFrame = Frame(self.sScreen)
+                self.sScreenTopFrame.place(x=0, y=0, width=700, height=100)
+
+                self.sScreenEntryFrame = Frame(self.sScreen)
+                self.sScreenEntryFrame.place(x=50, y=150, width=600, height=400)
+
+                Label(self.sScreenTopFrame, text="Create your grading system for this subject", bg=homeColor, font=("Calibri 20 bold")).pack(pady=30)
                 
+                Label(self.sScreenEntryFrame, text="Name", font=("Calibri 14")).grid(row=0, column=0)
+                self.entry1 = Entry(self.sScreenEntryFrame, font=("Calibri 14")).grid(row=0, column=1)
+                Label(self.sScreenEntryFrame, text="Percentage", font=("Calibri 14")).grid(row=0, column=2, sticky=E)
+                self.percentage1 = Entry(self.sScreenEntryFrame, width=5, font=("Calibri 14")).grid(row=0, column=3, sticky=E)
+                Label(self.sScreenEntryFrame, text="%", font=("Calibri 14")).grid(row=0, column=9, sticky=E)
+
+        def newCustomScreen(self):
+                self.cScreen = Tk()
+                self.cScreen.geometry("700x600+450+120")
+                self.cScreen.title("Custom Grading System")
+                self.cScreen.config(bg=homeColor)
 
 
 if __name__ == "__main__":

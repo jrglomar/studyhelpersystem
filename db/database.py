@@ -196,3 +196,4 @@ class Progress:
     def __init__(self):
         self.mydb = mydb
         self.cursor = cursor
+    
