@@ -204,6 +204,11 @@ class Progress:
         
         self.mydb.commit()
 
+    def insertCustom(self, data):
+
+        self.cursor.execute("INSERT INTO GRADINGSYSTEM(SubjectID, Type, Percentage) VALUES(%s, %s, %s);", (data))
+        self.mydb.commit()
+
     def displayGs(self, SubjectID):
 
         self.cursor.execute("SELECT GradingSystemID, Type, Percentage FROM GRADINGSYSTEM WHERE SubjectID = %s;", (SubjectID, ))
