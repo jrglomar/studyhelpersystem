@@ -745,7 +745,7 @@ class ScheduleScreen(Frame):
             Label(self.headerFrame, text="Schedule", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
             Label(self.headerFrame, text = lastyear + "-" + (str(date.strftime("%Y"))), bg = headerColor, fg="white", font=("Calibri 13")).place(x=170, y=75)
 
-            Label(self.headerFrame, text="Manage Subject", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=620, y=40)
+            Label(self.headerFrame, text="Create Subject", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=620, y=40)
             self.createTaskButton = Button(self.headerFrame, text="New Subject +", bg=buttonColor, fg=buttonFontColor, font=("Calibri 12"),
             command=self.newSubject).place(x=620, y=80, width=120, height=30)
 
@@ -960,11 +960,9 @@ class ProgressScreen(Frame):
 
                 self.displaySubject()
 
-                Label(self.headerFrame, text="Schedule", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
-                Label(self.headerFrame, text = lastyear + "-" + (str(date.strftime("%Y"))), bg = headerColor, fg="white", font=("Calibri 13")).place(x=170, y=75)
+                Label(self.headerFrame, text="Manage Subject", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=170, y=40)
 
-                Label(self.headerFrame, text="Manage Subject", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=620, y=40)
-
+                Label(self.headerFrame, text="Academic Activity", bg=headerColor, fg=headerFontColor, font=("Calibri 20 bold")).place(x=620, y=40)
 
         def displaySubject(self):
                 self.subjectDb = Subject()
@@ -993,7 +991,7 @@ class ProgressScreen(Frame):
                 column = 1
                 row = 0
                 btn = []
-                ext = []
+                add = []
 
                 for i in range(0, len(x), 1):
                         if row == 6:
@@ -1007,13 +1005,18 @@ class ProgressScreen(Frame):
                                 Label(self.subjFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=5, width=385)
                                 btn.append(Button(self.subjFrame, 
                                 command=lambda c=i: self.manageGradingSystem(self.SubjectID[c]), 
-                                text="Manage Subject Progress", bg=buttonColor, fg=buttonFontColor))
-                                btn[i].place(x=100, y=25, width=200)
+                                text="Create Subject Grading System", bg="navy", fg=buttonFontColor))
+                                btn[i].place(x=10, y=25, width=180)
+
+                                add.append(Button(self.subjFrame, 
+                                command=lambda c=i: self.newAcademicActivity(self.SubjectID[c]), 
+                                text="Add Academic Activity", bg="dark green", fg=buttonFontColor))
+                                add[i].place(x=200, y=25, width=180)
                                 row += 1
 
         def manageGradingSystem(self, subjectID):
                 self.gScreen = Tk()
-                self.gScreen.geometry("300x120+680+250")
+                self.gScreen.geometry("300x150+680+250")
                 self.gScreen.title("Manage Subject Progress")
                 self.gScreen.config(bg=homeColor)
 
@@ -1065,7 +1068,7 @@ class ProgressScreen(Frame):
 
                 Button(self.sScreenEntryFrame, command=lambda: self.addStandardGs(subjectID), text="Click here to apply standard grading system", bg="navy", fg=buttonFontColor).grid(row=5, column=2, columnspan=5)
 
-                Button(self.sScreenEntryFrame, command=lambda: self.destroyToCustom(subjectID), text="Click here to create custom grading system", bg="dark green", fg=buttonFontColor).grid(row=6, column=0, columnspan=5, sticky=W)
+                Button(self.sScreen, command=lambda: self.destroyToCustom(subjectID), text="Click here to create custom grading system", bg="dark green", fg=buttonFontColor).place(x=250, y=530)
 
                 self.displayGsList = self.gradingSystem.displayGs(subjectID)
                 data = []
@@ -1087,7 +1090,7 @@ class ProgressScreen(Frame):
                 for i in range(0, len(self.displayGsList), 1):
                         Label(self.dataGs, bg=homeColor, text=(self.Type[i])).grid(row=i, column=0)
                         Label(self.dataGs, bg=homeColor, text=str(self.Percentage[i]) + "%").grid(row=i, column=1)
-                        btn.append(Button(self.dataGs, command=lambda c=i: self.deleteGs(self.GradingSystemID[c], subjectID), text="Delete", bg="red", fg=buttonFontColor))
+                        btn.append(Button(self.dataGs, command=lambda c=i: self.deleteGs(self.GradingSystemID[c], subjectID), text="Delete", bg="maroon", fg=buttonFontColor))
                         btn[i].grid(row=i, column=2)
 
         def deleteGs(self, GradingSystemID, subjectID):
@@ -1105,13 +1108,15 @@ class ProgressScreen(Frame):
 
 
                 if self.sum >= 100:
-                        Label(self.sScreen, bg=homeColor,text="Warning: Grading System is already set to this subject", fg="maroon", font =("Calibri 14")).place(x=0, y=560, width=700)
+                        Label(self.sScreen, bg=homeColor,text="Warning: Grading System is already set to this subject", fg="red", font =("Calibri 14")).place(x=0, y=560, width=700)
                 elif self.sum < 100:
-                        Label(self.sScreen, bg=homeColor,text="Warning: Grading System should be equals to 100%", fg="maroon", font =("Calibri 14")).place(x=0, y=560, width=700)
+                        Label(self.sScreen, bg=homeColor,text="Warning: Grading System should be equals to 100%", fg="red", font =("Calibri 14")).place(x=0, y=560, width=700)
 
         def addStandardGs(self, subjectID):
                 if self.sum >= 100:
-                        Label(self.sScreen, text="Warning: You can't apply standard gs. Grading System is already set to this subject", fg="maroon", font =("Calibri 14")).place(x=0, y=560, width=700)
+                        Label(self.sScreen, bg=homeColor, text="Warning: You can't apply standard gs. Grading System is already set to this subject", fg="red", font =("Calibri 14")).place(x=0, y=560, width=700)
+                elif self.sum > 0:
+                        Label(self.sScreen, bg=homeColor, text="Warning: You can't apply standard gs. You need to delete all existing academic activity type", fg="red", font =("Calibri 14")).place(x=0, y=560, width=700)
                 else:
                         data = [(subjectID, "Assignment", "10"),
                                 (subjectID, "Attendance", "10"),
@@ -1120,9 +1125,9 @@ class ProgressScreen(Frame):
                                 (subjectID, "Project", "25"),
                                 (subjectID, "Exam", "25")]
 
-                self.gradingSystem.insertStandard(data)
-                self.sScreen.destroy()
-                self.newStandardScreen(subjectID)
+                        self.gradingSystem.insertStandard(data)
+                        self.sScreen.destroy()
+                        self.newStandardScreen(subjectID)
 
         def destroyToCustom(self, subjectID):
                 self.sScreen.destroy()
@@ -1152,7 +1157,7 @@ class ProgressScreen(Frame):
                 self.customValidation(subjectID)
 
                 Label(self.cScreenTopFrame, text="Create your grading system for this subject", bg=homeColor, font=("Calibri 20 bold")).pack(pady=30)
-                Label(self.cScreenEntryFrame, text="", height=2).grid(row=0)
+                Label(self.cScreenEntryFrame, text="", height=2, bg=homeColor).grid(row=0)
 
                 Label(self.cScreenEntryFrame, text="Type", bg=homeColor, font=("Calibri 12")).grid(row=0, column=0, padx=20)
                 self.cEntry1 = Entry(self.cScreenEntryFrame, font=("Calibri 12"))
@@ -1165,7 +1170,7 @@ class ProgressScreen(Frame):
                 
                 Label(self.cScreenEntryFrame, bg=homeColor, text="Note: Your grading system should be equal to 100%", font=("Calibri 12")).grid(row=1, column=0, columnspan=5, sticky=W)
 
-                Button(self.cScreenEntryFrame, command=lambda: self.destroyToStandard(subjectID), text="Click here to set standard grading system", bg="navy", fg=buttonFontColor).grid(row=2, column=0, columnspan=5, sticky=W)
+                Button(self.cScreen, command=lambda: self.destroyToStandard(subjectID), text="Click here to set standard grading system", bg="navy", fg=buttonFontColor).place(x=250, y=530)
 
                 self.displayGsList = self.gradingSystem.displayGs(subjectID)
                 data = []
@@ -1187,7 +1192,7 @@ class ProgressScreen(Frame):
                 for i in range(0, len(self.displayGsList), 1):
                         Label(self.cdataGs, bg=homeColor, text=(self.Type[i])).grid(row=i, column=0)
                         Label(self.cdataGs, bg=homeColor, text=str(self.Percentage[i]) + "%").grid(row=i, column=1)
-                        btn.append(Button(self.cdataGs, command=lambda c=i: self.cdeleteGs(self.GradingSystemID[c], subjectID), text="Delete", bg="red", fg=buttonFontColor))
+                        btn.append(Button(self.cdataGs, command=lambda c=i: self.cdeleteGs(self.GradingSystemID[c], subjectID), text="Delete", bg="maroon", fg=buttonFontColor))
                         btn[i].grid(row=i, column=2)
 
         def destroyToStandard(self, subjectID):
@@ -1203,9 +1208,9 @@ class ProgressScreen(Frame):
                         Label(self.cdataGs, text="Total = " + str(self.sum)+"%", bg=homeColor).grid(row=10, column=0, columnspan=5, sticky=S)
 
                 if self.sum >= 100:
-                        Label(self.cScreen, text="Warning: Grading System is already set to this subject", fg="maroon", bg=homeColor, font =("Calibri 14")).place(x=0, y=560, width=700)
+                        Label(self.cScreen, text="Warning: Grading System is already set to this subject", fg="red", bg=homeColor, font =("Calibri 14")).place(x=0, y=560, width=700)
                 elif self.sum < 100:
-                        Label(self.cScreen, text="Warning: Grading System should be equals to 100%", fg="maroon",  bg=homeColor, font =("Calibri 14")).place(x=0, y=560, width=700)
+                        Label(self.cScreen, text="Warning: Grading System should be equals to 100%", fg="red",  bg=homeColor, font =("Calibri 14")).place(x=0, y=560, width=700)
                 
         def cdeleteGs(self, GradingSystemID, subjectID):
                 self.gradingSystem.deleteGs(GradingSystemID)
@@ -1219,6 +1224,77 @@ class ProgressScreen(Frame):
                 self.addGs.insertCustom(data)
                 self.cScreen.destroy()
                 self.newCustomScreen(subjectID)
+
+        # CREATE ACADEMIC ACTIVITY
+        def newAcademicActivity(self, subjectID):
+                self.newAcademic = Tk()
+                self.newAcademic.geometry("700x600+450+120")
+                self.newAcademic.title("New Academic Activity")
+                self.newAcademic.config(bg=homeColor)
+
+                self.newAcademicTopFrame = Frame(self.newAcademic)
+                self.newAcademicTopFrame.place(x=0, y=0, width=700, height=100)
+                self.newAcademicTopFrame.configure(bg=homeColor)
+
+                self.newAcademicEntryFrame = Frame(self.newAcademic)
+                self.newAcademicEntryFrame.place(x=180, y=150, width=500, height=400)
+                self.newAcademicEntryFrame.configure(bg=homeColor)
+
+                self.dataAA = Frame(self.newAcademicEntryFrame)
+                self.dataAA.place(x=170, y=200, width=180)
+                self.dataAA.configure(bg=homeColor)
+
+                Label(self.newAcademicTopFrame, text="Add academic activity to track your progress", bg=homeColor, font=("Calibri 20 bold")).pack(pady=30)
+                Label(self.newAcademicEntryFrame, text="", bg=homeColor, height=2).grid(row=0)
+
+                # TYPE OF ACTIVITY
+                self.db = Progress()
+                self.gsVar = StringVar(self.newAcademic)
+                self.gsList = ["", ]
+                self.gettype = dict(self.db.getType(subjectID))
+                for x in self.gettype.values():
+                        self.gsList.append(x)
+                
+
+                Label(self.newAcademicEntryFrame, text="Type of Activity: ", bg=homeColor, font=("Calibri 12")).grid(row=0, column=0, sticky=W, padx=20)
+                self.gsOption = OptionMenu(self.newAcademicEntryFrame, self.gsVar, *self.gsList)
+                self.gsOption["highlightthickness"]=0
+                self.gsOption.grid(row=0, column=1, padx=10, sticky=W)
+                
+                # TITLE
+                Label(self.newAcademicEntryFrame, text="Title: ", bg=homeColor, font=("Calibri 12")).grid(row=1, column=0, sticky=W, padx=20)
+                self.titleEntry = Entry(self.newAcademicEntryFrame, font=("Calibri 12"))
+                self.titleEntry.grid(row=1, column=1, sticky=W)
+                
+                # SCORE
+                Label(self.newAcademicEntryFrame, text="Score: ", bg=homeColor, font=("Calibri 12")).grid(row=2, column=0, sticky=W, padx=20)
+                self.scoreEntry = Entry(self.newAcademicEntryFrame, font=("Calibri 12"))
+                self.scoreEntry.grid(row=2, column=1, sticky=W)
+
+                # MAXSCORE
+                Label(self.newAcademicEntryFrame, text="Max Score: ", bg=homeColor, font=("Calibri 12")).grid(row=3, column=0, sticky=W, padx=20)
+                self.maxScoreEntry = Entry(self.newAcademicEntryFrame, font=("Calibri 12"))
+                self.maxScoreEntry.grid(row=3, column=1, sticky=W)
+
+                Button(self.newAcademicEntryFrame, command=lambda: self.insertAa(subjectID), text="Insert", bg=buttonColor, fg=buttonFontColor, font=("Calibri 10")).grid(row=4, column=0, pady=10, sticky=E, columnspan=2)
+        
+        def insertAa(self, subjectID):
+                Title = self.titleEntry.get()
+                Score = self.scoreEntry.get()
+                Max_Score = self.maxScoreEntry.get()
+                Type = self.get_key(self.gsVar.get())
+                Result = (float(Score)/float(Max_Score)) * 100
+
+                data = (subjectID, Type, Title, Score, Max_Score, Result)
+                self.db.insertAcademic(data)
+                self.newAcademic.destroy()
+                
+        def get_key(self, var):
+                for key, value in self.gettype.items(): 
+                        if var == value: 
+                                return key 
+                
+                        return "key doesn't exist"
 
 if __name__ == "__main__":
     app = App()

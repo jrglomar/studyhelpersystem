@@ -227,3 +227,13 @@ class Progress:
         self.cursor.execute("DELETE FROM GRADINGSYSTEM WHERE GradingSystemID = %s;", (GradingSystemID, ))
         self.mydb.commit()
         
+    
+    def getType(self, subjectID):
+        self.cursor.execute("SELECT GradingSystemID, Type  FROM GRADINGSYSTEM WHERE SubjectID = %s;", (subjectID, ))
+        self.mydb.commit()
+        
+        return (self.cursor.fetchall())
+
+    def insertAcademic(self, data):
+        self.cursor.execute("INSERT INTO AcademicActivity (SubjectID, GradingSystemID, Title, Score, Max_Score, Result) VALUES(%s,%s,%s,%s,%s,%s);", (data))
+        self.mydb.commit()
