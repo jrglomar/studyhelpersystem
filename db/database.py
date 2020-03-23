@@ -237,3 +237,25 @@ class Progress:
     def insertAcademic(self, data):
         self.cursor.execute("INSERT INTO AcademicActivity (SubjectID, GradingSystemID, Title, Score, Max_Score, Result) VALUES(%s,%s,%s,%s,%s,%s);", (data))
         self.mydb.commit()
+
+    def getSubjectName(self, subjectID):
+        self.cursor.execute("SELECT Name FROM SUBJECT WHERE SubjectID = %s",(subjectID, ))
+        self.mydb.commit()
+
+        return self.cursor.fetchone()
+
+    def getAcademicActivity(self, subjectID):
+        self.cursor.execute("SELECT AcademicActivityID, GradingSystemID, Title, Score, Max_Score, Result FROM AcademicActivity WHERE SubjectID = %s;", (subjectID, ))
+        self.mydb.commit()
+
+        return self.cursor.fetchall()
+
+    def deleteAcademicActivity(self, aaID):
+        self.cursor.execute("DELETE FROM AcademicActivity WHERE AcademicActivityID = %s", (aaID, ))
+        self.mydb.commit()
+
+    def getAcadType(self, gsID):
+        self.cursor.execute("SELECT Type FROM GRADINGSYSTEM WHERE GradingSystemID = %s", (gsID, ))
+        self.mydb.commit()
+        
+        return self.cursor.fetchone()

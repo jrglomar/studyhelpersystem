@@ -992,6 +992,7 @@ class ProgressScreen(Frame):
                 row = 0
                 btn = []
                 add = []
+                prog = []
 
                 for i in range(0, len(x), 1):
                         if row == 6:
@@ -999,19 +1000,24 @@ class ProgressScreen(Frame):
                                 row = 0
                         if row < 6:
                                 self.subjFrame = Frame(self.scheduleScreenFrame, relief=RAISED, borderwidth=5)
-                                self.subjFrame.grid(row=row, column=column, padx=10, pady=10)
-                                self.subjFrame.configure(width=400, height=65, bg=mainColor)
+                                self.subjFrame.grid(row=row, column=column, padx=3, pady=3)
+                                self.subjFrame.configure(width=400, height=85, bg=mainColor)
                                 
-                                Label(self.subjFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=5, width=385)
+                                Label(self.subjFrame, text=("Subject: " + self.SubjectName[i]), fg="white", bg=mainColor).place(x=5, y=3, width=385)
                                 btn.append(Button(self.subjFrame, 
                                 command=lambda c=i: self.manageGradingSystem(self.SubjectID[c]), 
                                 text="Create Subject Grading System", bg="navy", fg=buttonFontColor))
-                                btn[i].place(x=10, y=25, width=180)
+                                btn[i].place(x=10, y=25, width=180, height=21)
 
                                 add.append(Button(self.subjFrame, 
                                 command=lambda c=i: self.newAcademicActivity(self.SubjectID[c]), 
                                 text="Add Academic Activity", bg="dark green", fg=buttonFontColor))
-                                add[i].place(x=200, y=25, width=180)
+                                add[i].place(x=200, y=25, width=180, height=21)
+
+                                prog.append(Button(self.subjFrame, 
+                                command=lambda c=i: self.viewProgress(self.SubjectID[c]), 
+                                text="View Progress", bg=buttonColor, fg=buttonFontColor))
+                                prog[i].place(x=100, y=50, width=180, height=21)
                                 row += 1
 
         def manageGradingSystem(self, subjectID):
@@ -1047,7 +1053,10 @@ class ProgressScreen(Frame):
                 # VALIDATION 
                 self.standardValidation(subjectID)
 
-                Label(self.sScreenTopFrame, bg=homeColor, text="Create your grading system for this subject", font=("Calibri 20 bold")).pack(pady=30)
+                
+                Label(self.sScreenTopFrame, bg=homeColor, text="Create your grading system for this subject", font=("Calibri 20 bold")).pack(pady=10)
+                subjectName = self.gradingSystem.getSubjectName(subjectID)
+                Label(self.sScreenTopFrame, bg=homeColor, text="Subject: " + subjectName[0], font=("15"), fg="navy").pack()
                 Label(self.sScreenEntryFrame, bg=homeColor, text="", height=2).grid(row=0)
 
                 Label(self.sScreenEntryFrame, text="Type",  bg=homeColor,font=("Calibri 12")).grid(row=0, column=0, padx=20)
@@ -1156,7 +1165,9 @@ class ProgressScreen(Frame):
                 # VALIDATION 
                 self.customValidation(subjectID)
 
-                Label(self.cScreenTopFrame, text="Create your grading system for this subject", bg=homeColor, font=("Calibri 20 bold")).pack(pady=30)
+                Label(self.cScreenTopFrame, text="Create your grading system for this subject", bg=homeColor, font=("Calibri 20 bold")).pack(pady=10)
+                subjectName = self.gradingSystem.getSubjectName(subjectID)
+                Label(self.cScreenTopFrame, bg=homeColor, text="Subject: " + subjectName[0], font=("15"), fg="navy").pack()
                 Label(self.cScreenEntryFrame, text="", height=2, bg=homeColor).grid(row=0)
 
                 Label(self.cScreenEntryFrame, text="Type", bg=homeColor, font=("Calibri 12")).grid(row=0, column=0, padx=20)
@@ -1228,7 +1239,7 @@ class ProgressScreen(Frame):
         # CREATE ACADEMIC ACTIVITY
         def newAcademicActivity(self, subjectID):
                 self.newAcademic = Tk()
-                self.newAcademic.geometry("700x600+450+120")
+                self.newAcademic.geometry("700x400+450+120")
                 self.newAcademic.title("New Academic Activity")
                 self.newAcademic.config(bg=homeColor)
 
@@ -1243,8 +1254,11 @@ class ProgressScreen(Frame):
                 self.dataAA = Frame(self.newAcademicEntryFrame)
                 self.dataAA.place(x=170, y=200, width=180)
                 self.dataAA.configure(bg=homeColor)
-
-                Label(self.newAcademicTopFrame, text="Add academic activity to track your progress", bg=homeColor, font=("Calibri 20 bold")).pack(pady=30)
+                
+                self.gradingSystem = Progress()
+                Label(self.newAcademicTopFrame, text="Add academic activity to track your progress", bg=homeColor, font=("Calibri 20 bold")).pack(pady=10)
+                subjectName = self.gradingSystem.getSubjectName(subjectID)
+                Label(self.newAcademicTopFrame, bg=homeColor, text="Subject: " + subjectName[0], font=("15"), fg="navy").pack()
                 Label(self.newAcademicEntryFrame, text="", bg=homeColor, height=2).grid(row=0)
 
                 # TYPE OF ACTIVITY
@@ -1288,13 +1302,91 @@ class ProgressScreen(Frame):
                 data = (subjectID, Type, Title, Score, Max_Score, Result)
                 self.db.insertAcademic(data)
                 self.newAcademic.destroy()
+                self.viewProgress(subjectID)
                 
         def get_key(self, var):
                 for key, value in self.gettype.items(): 
                         if var == value: 
                                 return key 
                 
-                        return "key doesn't exist"
+                return "key doesn't exist"
+
+
+        # VIEW PROGRESS 
+        def viewProgress(self, subjectID):
+                self.viewProgressScreen = Tk()
+                self.viewProgressScreen.geometry("+100+0")
+                self.viewProgressScreen.title("Academic Activity Logs")
+                self.viewProgressScreen.config(bg=homeColor)
+
+                self.viewAaLogs(subjectID)
+
+                self.viewLogs = Progress()
+                subjectName = self.viewLogs.getSubjectName(subjectID)
+                Label(self.viewProgressScreen, bg=homeColor, text="Subject: " + subjectName[0], font=("Calibri 16 bold"), fg="black").grid(row=0, column=1, columnspan=3)
+                Label(self.viewProgressScreen, text=("Academic Type"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=0, padx=5)
+                Label(self.viewProgressScreen, text=("Title"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=1, padx=5)
+                Label(self.viewProgressScreen, text=("Score"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=2, padx=5)
+                Label(self.viewProgressScreen, text=("Max Score"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=3, padx=5)
+                Label(self.viewProgressScreen, text=("Result"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=4, padx=5)
+
+        def viewAaLogs(self, subjectID):
+                self.aaLogs = Progress()
+                x = self.aaLogs.getAcademicActivity(subjectID)
+                data = []
+                for row in x:
+                        data.append(row)
+
+                self.AcademicActivityID = []
+                self.GradingSystemID = []
+                self.Title = []
+                self.Score = []
+                self.Max_Score = []
+                self.Result = []
+                i = 0
+                for d in data:
+                        self.AcademicActivityID.append(d[0])
+                        self.GradingSystemID.append(self.aaLogs.getAcadType(d[1]))
+                        self.Title.append(d[2])
+                        self.Score.append(d[3])
+                        self.Max_Score.append(d[4])
+                        self.Result.append(d[5])
+
+
+
+                column = 0
+                row = 2
+                delbtn = []
+
+                for i in range(0, len(x), 1):
+                        if row == 22:
+                                column += 6
+                                row = 2
+                                Label(self.viewProgressScreen, text=("Academic Type"), fg="navy", font=("Calibri 16 bold"), bg=homeColor).grid(row=1, column=column+0, padx=5)
+                                Label(self.viewProgressScreen, text=("Title"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=column+1, padx=5)
+                                Label(self.viewProgressScreen, text=("Score"), fg="navy", font=("Calibri bold 12 bold"), bg=homeColor).grid(row=1, column=column+2, padx=5)
+                                Label(self.viewProgressScreen, text=("Max Score"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=column+3, padx=5)
+                                Label(self.viewProgressScreen, text=("Result"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=column+4, padx=5)
+                        if row < 22:
+                                Label(self.viewProgressScreen, text=(self.GradingSystemID[i]), fg="black", bg=homeColor).grid(row=row, column=column)
+                                Label(self.viewProgressScreen, text=(self.Title[i]), fg="black", bg=homeColor).grid(row=row, column=column+1)
+                                Label(self.viewProgressScreen, text=(str(self.Score[i])), fg="black", bg=homeColor).grid(row=row, column=column+2)
+                                Label(self.viewProgressScreen, text=(self.Max_Score[i]), fg="black", bg=homeColor).grid(row=row, column=column+3)
+                                Label(self.viewProgressScreen, text=(str(self.Result[i])), fg="black", bg=homeColor).grid(row=row, column=column+4)
+
+                                delbtn.append(Button(self.viewProgressScreen, 
+                                command=lambda c=i: self.deleteLogs(self.AcademicActivityID[c], subjectID), 
+                                text="Delete", bg="maroon", fg=buttonFontColor))
+                                delbtn[i].grid(row=row, column=column+5, padx=10)
+
+                                row += 1
+
+        def deleteLogs(self, aaID, subjectID):
+                self.deleteLogs = Progress()
+                self.deleteLogs.deleteAcademicActivity(aaID)
+
+                self.viewProgressScreen.destroy()
+                self.viewProgress(subjectID)
 
 if __name__ == "__main__":
     app = App()
