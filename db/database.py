@@ -12,14 +12,11 @@ class TestDb:
         self.mydb = mydb
         self.cursor = cursor
 
-    def read(self):
-        
-        self.cursor.execute("SELECT ReminderTypeID, Description  FROM REMINDERTYPE;")
+    def read(self, subjectID, gsID):
+        self.cursor.execute("SELECT Result FROM ACADEMICACTIVITY WHERE SubjectID = %s AND GradingSystemID = %s;", (subjectID, gsID))
         self.mydb.commit()
-        
-        x = dict(self.cursor.fetchall())
-        for z in x:
-            print(x[z])
+
+
 
 
         
@@ -41,6 +38,14 @@ class Validation:
             return (self.cursor.fetchone())
         except:
             return False
+    def checkFinalGrade(self, subjectID):
+        try:
+            self.cursor.execute("SELECT * FROM SUBJECT_GRADE WHERE SubjectID = %s", (subjectID, ))
+            return (self.cursor.fetchone())
+        except:
+            return False
+
+
 
 class UserDb:
     def __init__(self):
@@ -259,3 +264,30 @@ class Progress:
         self.mydb.commit()
         
         return self.cursor.fetchone()
+
+    def getResult(self, subjectID, gradingSystemID):
+        self.cursor.execute("SELECT Result FROM ACADEMICACTIVITY WHERE SubjectID = %s AND GradingSystemID = %s", (subjectID, gradingSystemID))
+        self.mydb.commit()
+
+        sum = 0
+        x = self.cursor.fetchall()
+        if not x:
+            return 100
+
+        else:
+            length = len(x)
+            for i in x:
+                sum += i[0]
+            average = sum/length
+
+            return average
+    
+    def insertFinalGrade(self, subjectID, finalgrade):
+        self.valid = Validation()
+        x = self.valid.checkFinalGrade(subjectID)
+        if not x:
+            self.cursor.execute("INSERT INTO SUBJECT_GRADE(SubjectID, Final_Grade) VALUES (%s, %s);", (subjectID, finalgrade))
+            self.mydb.commit()
+        else: 
+            self.cursor.execute("UPDATE SUBJECT_GRADE SET Final_Grade=%s WHERE SubjectID=%s;", (finalgrade, subjectID))
+            self.mydb.commit()

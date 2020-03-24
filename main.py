@@ -1302,7 +1302,7 @@ class ProgressScreen(Frame):
                 data = (subjectID, Type, Title, Score, Max_Score, Result)
                 self.db.insertAcademic(data)
                 self.newAcademic.destroy()
-                self.viewProgress(subjectID)
+                self.viewLogs(subjectID)
                 
         def get_key(self, var):
                 for key, value in self.gettype.items(): 
@@ -1311,18 +1311,102 @@ class ProgressScreen(Frame):
                 
                 return "key doesn't exist"
 
+        def viewProgress(self, subjectID):
+                self.viewGradeScreen = Tk()
+                self.viewGradeScreen.geometry("+700+250")
+                self.viewGradeScreen.title("Your academic progress")
+                self.viewGradeScreen.config(bg=homeColor)
+                
+
+                self.getresult = Progress()
+                subjectName = self.getresult.getSubjectName(subjectID)
+                Label(self.viewGradeScreen, text="Progress in your subject: "+ str(subjectName[0]), bg=homeColor, font=("Calibri 15 bold")).grid(row=0, columnspan=3)
+                Label(self.viewGradeScreen, text="Academic Type", bg=homeColor, font=("Calibri 12 bold"), fg="navy").grid(row=1, column=0)
+                Label(self.viewGradeScreen, text="Percentage", bg=homeColor, font=("Calibri 12 bold"), fg="navy").grid(row=1, column=1)
+                Label(self.viewGradeScreen, text="Your Academic Activity Result", bg=homeColor, font=("Calibri 12 bold"), fg="navy").grid(row=1, column=2)
+
+
+
+
+                x = self.getresult.displayGs(subjectID)
+
+
+                self.GSID = []
+                self.Type = []
+                self.Percentage = []
+
+                for data in x:
+                        self.GSID.append(data[0])
+                        self.Type.append(data[1])
+                        self.Percentage.append(data[2])
+
+                self.average = []
+                for i in range(0, len(self.GSID), 1):
+                        ave = self.getresult.getResult(subjectID, self.GSID[i])
+                        self.average.append(ave)
+
+                self.result = []
+                for i in range(0, len(self.average), 1):
+                        aaResult = (self.average[i]/100) * self.Percentage[i]
+                        self.result.append(aaResult)
+
+                row = 2
+                for i in range(0, len(self.GSID), 1):
+                        Label(self.viewGradeScreen, text=self.Type[i], bg=homeColor).grid(row=row, column=0)
+                        Label(self.viewGradeScreen, text=str(self.Percentage[i]) + "%", bg=homeColor).grid(row=row, column=1)
+                        Label(self.viewGradeScreen, text=str(round(self.result[i], 2))+ "%", bg=homeColor).grid(row=row, column=2)
+                        
+                        row +=1
+
+                finalgrade = 0
+                for result in self.result:
+                        finalgrade += result
+
+                self.getresult.insertFinalGrade(subjectID, finalgrade)
+                collegeGrade = self.gradeEquivalent(finalgrade)
+
+                Label(self.viewGradeScreen, text="Your estimated grade is: " + str(round(finalgrade, 2)) + " or " +str(collegeGrade), bg=homeColor, font=("Calibri 12 bold")).grid(row=20, columnspan=3, sticky=S)
+                Button(self.viewGradeScreen, command=lambda: self.viewLogs(subjectID), text="View your academic activity logs", bg=buttonColor, fg=buttonFontColor, font=("Calibri 10")).grid(row=22, columnspan=3, sticky=S)
+
+
+        def gradeEquivalent(self, finalgrade):
+                collegeGrade = 0
+                if finalgrade >= 97 and finalgrade <= 100:
+                        collegeGrade = 1.0
+                elif finalgrade >=94 and finalgrade <=96.99:
+                        collegeGrade = 1.25
+                elif finalgrade >=91 and finalgrade <=93.99:
+                        collegeGrade = 1.5
+                elif finalgrade >=88 and finalgrade <=90.99:
+                        collegeGrade = 1.75
+                elif finalgrade >=85 and finalgrade <=87.99:
+                        collegeGrade = 2.0
+                elif finalgrade >=82 and finalgrade <=84.99:
+                        collegeGrade = 2.25
+                elif finalgrade >=79 and finalgrade <=81.99:
+                        collegeGrade = 2.5
+                elif finalgrade >=76 and finalgrade <=78.99:
+                        collegeGrade = 2.75
+                elif finalgrade >=75 and finalgrade <=75.99:
+                        collegeGrade = 3.0
+                elif finalgrade >=65 and finalgrade <=74.99:
+                        collegeGrade = 2.75
+
+                return collegeGrade
+                        
+
 
         # VIEW PROGRESS 
-        def viewProgress(self, subjectID):
-                self.viewProgressScreen = Tk()
+        def viewLogs(self, subjectID):
+                self.viewProgressScreen = Toplevel(self)
                 self.viewProgressScreen.geometry("+100+0")
                 self.viewProgressScreen.title("Academic Activity Logs")
                 self.viewProgressScreen.config(bg=homeColor)
 
                 self.viewAaLogs(subjectID)
 
-                self.viewLogs = Progress()
-                subjectName = self.viewLogs.getSubjectName(subjectID)
+                self.logs = Progress()
+                subjectName = self.logs.getSubjectName(subjectID)
                 Label(self.viewProgressScreen, bg=homeColor, text="Subject: " + subjectName[0], font=("Calibri 16 bold"), fg="black").grid(row=0, column=1, columnspan=3)
                 Label(self.viewProgressScreen, text=("Academic Type"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=0, padx=5)
                 Label(self.viewProgressScreen, text=("Title"), fg="navy", font=("Calibri 12 bold"), bg=homeColor).grid(row=1, column=1, padx=5)
@@ -1382,11 +1466,15 @@ class ProgressScreen(Frame):
                                 row += 1
 
         def deleteLogs(self, aaID, subjectID):
-                self.deleteLogs = Progress()
-                self.deleteLogs.deleteAcademicActivity(aaID)
+                self.delLogs = Progress()
+                self.delLogs.deleteAcademicActivity(aaID)
 
                 self.viewProgressScreen.destroy()
+                self.viewLogs(subjectID)
+                self.viewGradeScreen.destroy()
                 self.viewProgress(subjectID)
+                
+
 
 if __name__ == "__main__":
     app = App()
