@@ -6,8 +6,7 @@ It is a Desktop GUI Application.
 
 <br>
 
-## Technology Stack
- 
+# Technology Stack
 **- Python (Tkinter)** <br>
 **- MySQL**
 
