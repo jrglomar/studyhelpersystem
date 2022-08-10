@@ -27,7 +27,7 @@ lastyear = str(int(lastyear)-1) # GET LAST YEAR
 
 ### 
 
-studID = 1
+studID = 0
 username = ""
 
 
@@ -260,6 +260,7 @@ class HomeScreen(Frame):
                 data = []
                 for row in x:
                         data.append(row)
+                        print(row)
 
                 self.SubjectID = []
                 self.StudentID = []
@@ -271,12 +272,13 @@ class HomeScreen(Frame):
                 i = 0
                 for d in data:
                         self.SubjectID.append(d[0])
-                        self.StudentID.append(d[1])
-                        self.SubjectName.append(d[2])
-                        self.Start_Time.append(d[3])
-                        self.End_Time.append(d[4])
-                        self.Day_Schedule.append(d[5])
-                        self.Description.append(d[6])
+                        self.SubjectName.append(d[1])
+                        self.Start_Time.append(d[2])
+                        self.End_Time.append(d[3])
+                        self.Day_Schedule.append(d[4])
+                        self.Description.append(d[5])
+                        self.StudentID.append(d[6])
+                        
 
                 column = 1
                 row = 0
@@ -363,11 +365,11 @@ class HomeScreen(Frame):
 
                 for d in data:
                         self.ReminderID.append(d[0])
-                        self.StudentID.append(d[1])
-                        self.ReminderTypeID.append(d[2])
-                        self.Title.append(d[3])
-                        self.Due_Date.append(d[4])
-                        self.Details.append(d[5])
+                        self.Title.append(d[1])
+                        self.Due_Date.append(d[2])
+                        self.Details.append(d[3])
+                        self.StudentID.append(d[4])
+                        self.ReminderTypeID.append(d[5])
                         self.Subject.append(d[6])
                 column = 1
                 row = 0
@@ -510,11 +512,11 @@ class TaskScreen(Frame):
         i = 0
         for d in data:
                 self.TaskID.append(d[0])
-                self.StudentID.append(d[1])
-                self.ReminderTypeID.append(d[2])
-                self.Title.append(d[3])
-                self.Date.append(d[4])
-                self.Detail.append(d[5])
+                self.Title.append(d[1])
+                self.Date.append(d[2])
+                self.Detail.append(d[3])
+                self.StudentID.append(d[4])
+                self.ReminderTypeID.append(d[5])
                 self.Subject.append(d[6])
 
         column = 1
@@ -534,6 +536,7 @@ class TaskScreen(Frame):
 
                         self.rem = TaskOptionMenu()
                         self.remindertype = self.rem.getReminder(self.ReminderTypeID[i])
+                        
 
                         Label(self.listFrame, text=("Title: " + self.Title[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=7, y=5, width=230)
                         Label(self.listFrame, text=("Type: " + self.remindertype[0]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=7, y=25, width=230)
@@ -612,7 +615,7 @@ class TaskScreen(Frame):
             self.db = TaskOptionMenu()
             self.subjVar = StringVar(self.root)
             self.typeVar = StringVar(self.root)
-            self.remindertype = ["", ]
+            self.remindertype = ["",]
             self.gettype = dict(self.db.getType())
             for x in self.gettype.values():
                 self.remindertype.append(x)
@@ -756,6 +759,8 @@ class ScheduleScreen(Frame):
                 for row in x:
                         data.append(row)
 
+                
+
                 self.SubjectID = []
                 self.StudentID = []
                 self.SubjectName = []
@@ -766,12 +771,12 @@ class ScheduleScreen(Frame):
                 i = 0
                 for d in data:
                         self.SubjectID.append(d[0])
-                        self.StudentID.append(d[1])
-                        self.SubjectName.append(d[2])
-                        self.Start_Time.append(d[3])
-                        self.End_Time.append(d[4])
-                        self.Day_Schedule.append(d[5])
-                        self.Description.append(d[6])
+                        self.SubjectName.append(d[1])
+                        self.Start_Time.append(d[2])
+                        self.End_Time.append(d[3])
+                        self.Day_Schedule.append(d[4])
+                        self.Description.append(d[5])
+                        self.StudentID.append(d[6])
 
                 column = 1
                 row = 0
@@ -786,7 +791,6 @@ class ScheduleScreen(Frame):
                                 self.subjFrame = Frame(self.scheduleScreenFrame, relief=RAISED, borderwidth=5)
                                 self.subjFrame.grid(row=row, column=column, padx=10, pady=10)
                                 self.subjFrame.configure(width=400, height=85, bg=mainColor)
-                                
                                 Label(self.subjFrame, text=("Subject: " + self.SubjectName[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=5, width=385)
                                 Label(self.subjFrame, text=("Day: " + self.Day_Schedule[i]), font=("Calibri 10"), fg=labelFontColor, bg=mainColor).place(x=5, y=25, width=385)
                                 btn.append(Button(self.subjFrame, command=lambda c=i: self.viewSubject(c), text="View", bg=buttonColor, fg=buttonFontColor))
@@ -1478,5 +1482,5 @@ class ProgressScreen(Frame):
 
 if __name__ == "__main__":
     app = App()
-    app.show_frame("ProgressScreen")
+    app.show_frame("LoginScreen")
     app.mainloop()
